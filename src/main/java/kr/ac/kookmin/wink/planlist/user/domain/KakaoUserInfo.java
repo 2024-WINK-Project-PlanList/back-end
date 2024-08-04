@@ -8,6 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class KakaoUserInfo {
-    private String nickname;
+    private String name;
     private String email;
 }

@@ -1,6 +1,8 @@
 package kr.ac.kookmin.wink.planlist.user.controller;
 
+import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.dto.request.KakaoLoginRequestDTO;
+import kr.ac.kookmin.wink.planlist.user.dto.request.RegisterRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.KakaoLoginResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +23,15 @@ public class AuthController {
     @GetMapping("/nick-validation/{nickname}")
     public ResponseEntity<Boolean> nicknameValidation(@PathVariable String nickname) {
         return ResponseEntity.ok(userService.checkNicknameValidation(nickname));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody RegisterRequestDTO registerRequestDTO) {
+        return ResponseEntity.ok(userService.register(registerRequestDTO, System.currentTimeMillis()));
+    }
+
+    @PostMapping("/temp")
+    public ResponseEntity<User> tempLogin() {
+        return ResponseEntity.ok(userService.getOrRegisterTempAccount(System.currentTimeMillis()));
     }
 }

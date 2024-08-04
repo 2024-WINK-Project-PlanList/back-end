@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import kr.ac.kookmin.wink.planlist.user.domain.KakaoUserInfo;
 import kr.ac.kookmin.wink.planlist.user.domain.LoginType;
+import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.dto.request.KakaoLoginRequestDTO;
+import kr.ac.kookmin.wink.planlist.user.dto.request.RegisterRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.KakaoLoginResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -23,6 +26,34 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
+
+    public User register(RegisterRequestDTO registerRequestDTO, long currentTime) {
+        String kakaoAccessToken = registerRequestDTO.getKakaoAccessToken();
+        KakaoUserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken)
+                .orElseThrow(() -> new IllegalArgumentException(kakaoAccessToken));
+
+        User user = User.builder()
+                .name(kakaoUserInfo.getName())
+                .nickname(registerRequestDTO.getNickname())
+                .email(kakaoUserInfo.getEmail())
+                .createdAt(new Timestamp(currentTime))
+                .build();
+
+        //TODO: accessToken 응답에 포함하기
+
+        return userRepository.save(user);
+    }
+
+    public User getOrRegisterTempAccount(long currentTime) {
+        String nickname = "테스트";
+        User tempUser = userRepository.findByNickname(nickname).orElse(null);
+
+        if (tempUser != null) {
+            return tempUser;
+        }
+
+        return register(new RegisterRequestDTO("temp", nickname), currentTime);
+    }
 
     public boolean checkNicknameValidation(String nickname) {
         return userRepository.existsByNickname(nickname);
@@ -50,6 +81,15 @@ public class UserService {
     }
 
     private Optional<KakaoUserInfo> getKakaoUserInfo(String accessToken) {
+        if (accessToken.equals("temp")) {
+            return Optional.of(
+                    KakaoUserInfo.builder()
+                            .name("test")
+                            .email("test@gmail.com")
+                            .build()
+            );
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
 
@@ -74,7 +114,7 @@ public class UserService {
         String email = kakaoAccount.get("email").getAsString();
 
         return Optional.of(KakaoUserInfo.builder()
-                .nickname(nickname)
+                .name(nickname)
                 .email(email)
                 .build());
     }
