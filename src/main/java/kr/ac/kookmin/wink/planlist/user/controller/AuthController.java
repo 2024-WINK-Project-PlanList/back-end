@@ -5,10 +5,7 @@ import kr.ac.kookmin.wink.planlist.user.dto.response.KakaoLoginResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,5 +16,10 @@ public class AuthController {
     @PostMapping("/kakao")
     public ResponseEntity<KakaoLoginResponseDTO> kakaoLogin(@RequestBody KakaoLoginRequestDTO kakaoLoginRequestDTO) {
         return ResponseEntity.ok(userService.kakaoLogin(kakaoLoginRequestDTO));
+    }
+
+    @GetMapping("/nick-validation/{nickname}")
+    public ResponseEntity<Boolean> nicknameValidation(@PathVariable String nickname) {
+        return ResponseEntity.ok(userService.checkNicknameValidation(nickname));
     }
 }

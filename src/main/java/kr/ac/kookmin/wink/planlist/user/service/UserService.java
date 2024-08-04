@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import kr.ac.kookmin.wink.planlist.user.domain.KakaoUserInfo;
 import kr.ac.kookmin.wink.planlist.user.domain.LoginType;
-import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.dto.request.KakaoLoginRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.KakaoLoginResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
@@ -24,6 +23,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
+
+    public boolean checkNicknameValidation(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
 
     public KakaoLoginResponseDTO kakaoLogin(KakaoLoginRequestDTO kakaoLoginRequestDTO) {
         String kakaoAccessToken = kakaoLoginRequestDTO.getAccessToken();
