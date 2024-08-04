@@ -46,9 +46,7 @@ public class UserService {
 
         String email = kakaoUserInfo.getEmail();
 
-        User user = userRepository.findByEmail(email).orElse(null);
-
-        return (user == null) ? LoginType.REGISTER : LoginType.EXIST;
+        return (userRepository.existsByEmail(email)) ? LoginType.EXIST : LoginType.REGISTER;
     }
 
     private Optional<KakaoUserInfo> getKakaoUserInfo(String accessToken) {
