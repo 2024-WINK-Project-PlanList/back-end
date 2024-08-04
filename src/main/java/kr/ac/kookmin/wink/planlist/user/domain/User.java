@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "user")
+@Table(name = "\"user\"")
 @Entity
 public class User {
     @Id
@@ -22,6 +22,7 @@ public class User {
 
     private String nickname;
 
+    @Column(name = "email")
     private String email;
 
     @Column(name = "profile_image_url")
