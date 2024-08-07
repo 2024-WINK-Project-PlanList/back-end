@@ -2,12 +2,15 @@ package kr.ac.kookmin.wink.planlist.user.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import kr.ac.kookmin.wink.planlist.global.config.jwt.TokenProvider;
 import kr.ac.kookmin.wink.planlist.user.domain.KakaoUserInfo;
 import kr.ac.kookmin.wink.planlist.user.domain.LoginType;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.dto.request.KakaoLoginRequestDTO;
+import kr.ac.kookmin.wink.planlist.user.dto.request.LoginRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.request.RegisterRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.KakaoLoginResponseDTO;
+import kr.ac.kookmin.wink.planlist.user.dto.response.RegisterResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -26,8 +30,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
+    private final TokenProvider tokenProvider;
 
-    public User register(RegisterRequestDTO registerRequestDTO, long currentTime) {
+    public RegisterResponseDTO register(RegisterRequestDTO registerRequestDTO, long currentTime) {
         String kakaoAccessToken = registerRequestDTO.getKakaoAccessToken();
         KakaoUserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken)
                 .orElseThrow(() -> new IllegalArgumentException(kakaoAccessToken));
@@ -39,17 +44,41 @@ public class UserService {
                 .createdAt(new Timestamp(currentTime))
                 .build();
 
-        //TODO: accessToken 응답에 포함하기
+        userRepository.save(user);
 
-        return userRepository.save(user);
+        String accessToken = tokenProvider.generateToken(user, Duration.ofDays(7));
+
+        return RegisterResponseDTO.builder()
+                .accessToken(accessToken)
+                .nickname(user.getNickname())
+                .build();
     }
 
-    public User getOrRegisterTempAccount(long currentTime) {
+    public User login(LoginRequestDTO loginRequestDTO) {
+        String accessToken = loginRequestDTO.getAccessToken();
+
+        if (!tokenProvider.validToken(accessToken)) {
+            throw new IllegalArgumentException("Invalid access token");
+        }
+
+        Long userId = tokenProvider.getUserId(accessToken);
+
+        return userRepository
+                .findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid userId in accessToken"));
+    }
+
+    public RegisterResponseDTO getOrRegisterTempAccount(long currentTime) {
         String nickname = "테스트";
         User tempUser = userRepository.findByNickname(nickname).orElse(null);
 
         if (tempUser != null) {
-            return tempUser;
+            String accessToken = tokenProvider.generateToken(tempUser, Duration.ofDays(7));
+
+            return RegisterResponseDTO.builder()
+                    .accessToken(accessToken)
+                    .nickname(nickname)
+                    .build();
         }
 
         return register(new RegisterRequestDTO("temp", nickname), currentTime);
@@ -61,23 +90,22 @@ public class UserService {
 
     public KakaoLoginResponseDTO kakaoLogin(KakaoLoginRequestDTO kakaoLoginRequestDTO) {
         String kakaoAccessToken = kakaoLoginRequestDTO.getAccessToken();
-        LoginType type = getLoginType(kakaoAccessToken);
-        //TODO: JWT Token 생성으로 교체하기
-        String accessToken = (type == LoginType.REGISTER) ? kakaoAccessToken : "test";
-
-        return KakaoLoginResponseDTO.builder()
-                .type(type)
-                .token(accessToken)
-                .build();
-    }
-
-    private LoginType getLoginType(String kakaoAccessToken) {
         KakaoUserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken)
                 .orElseThrow(() -> new IllegalArgumentException(kakaoAccessToken));
 
-        String email = kakaoUserInfo.getEmail();
+        LoginType type = LoginType.REGISTER;
+        String token = kakaoAccessToken;
+        User user = userRepository.findByEmail(kakaoUserInfo.getEmail()).orElse(null);
 
-        return (userRepository.existsByEmail(email)) ? LoginType.EXIST : LoginType.REGISTER;
+        if (user != null) {
+            type = LoginType.EXIST;
+            token = tokenProvider.generateToken(user, Duration.ofDays(7));
+        }
+
+        return KakaoLoginResponseDTO.builder()
+                .type(type)
+                .token(token)
+                .build();
     }
 
     private Optional<KakaoUserInfo> getKakaoUserInfo(String accessToken) {

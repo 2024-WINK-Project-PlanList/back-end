@@ -33,4 +33,6 @@ public class User {
 
     @Column(name = "created_at")
     private Timestamp createdAt;
+
+    //TODO: 개인캘린더 데이터 OneToOne으로 추가하기
 }
