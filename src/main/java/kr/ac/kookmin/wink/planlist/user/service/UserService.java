@@ -11,6 +11,7 @@ import kr.ac.kookmin.wink.planlist.user.dto.request.LoginRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.request.RegisterRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.KakaoLoginResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.RegisterResponseDTO;
+import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -50,11 +51,11 @@ public class UserService {
 
         return RegisterResponseDTO.builder()
                 .accessToken(accessToken)
-                .nickname(user.getNickname())
+                .user(UserDTO.create(user))
                 .build();
     }
 
-    public User login(LoginRequestDTO loginRequestDTO) {
+    public UserDTO login(LoginRequestDTO loginRequestDTO) {
         String accessToken = loginRequestDTO.getAccessToken();
 
         if (!tokenProvider.validToken(accessToken)) {
@@ -63,9 +64,11 @@ public class UserService {
 
         Long userId = tokenProvider.getUserId(accessToken);
 
-        return userRepository
+        User user = userRepository
                 .findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid userId in accessToken"));
+
+        return UserDTO.create(user);
     }
 
     public RegisterResponseDTO getOrRegisterTempAccount(long currentTime) {
@@ -77,7 +80,7 @@ public class UserService {
 
             return RegisterResponseDTO.builder()
                     .accessToken(accessToken)
-                    .nickname(nickname)
+                    .user(UserDTO.create(tempUser))
                     .build();
         }
 
