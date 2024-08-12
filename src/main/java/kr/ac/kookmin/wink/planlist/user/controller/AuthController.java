@@ -6,6 +6,7 @@ import kr.ac.kookmin.wink.planlist.user.dto.request.LoginRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.request.RegisterRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.KakaoLoginResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.RegisterResponseDTO;
+import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
 import kr.ac.kookmin.wink.planlist.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+    public ResponseEntity<UserDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
         return ResponseEntity.ok(userService.login(loginRequestDTO));
     }
 
