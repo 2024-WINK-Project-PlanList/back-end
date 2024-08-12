@@ -11,6 +11,7 @@ public class WaitingFriendsResponseDTO {
     private Long friendshipId;
     private Long friendId;
     private boolean isFollower;
+    private String email;
     private String nickname;
     private String songId;
     private String profileImagePath;
@@ -25,6 +26,7 @@ public class WaitingFriendsResponseDTO {
         this.isFollower = isFollower;
         this.nickname = anotherUser.getNickname();
         this.songId = anotherUser.getSongId();
+        this.email = anotherUser.getEmail();
         this.profileImagePath = anotherUser.getProfileImagePath();
     }
 }

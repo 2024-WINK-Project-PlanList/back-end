@@ -10,6 +10,7 @@ import lombok.Setter;
 public class UserFriendsResponseDTO {
     private Long friendshipId;
     private Long friendId;
+    private String email;
     private String nickname;
     private String songId;
     private String profileImagePath;
@@ -24,6 +25,7 @@ public class UserFriendsResponseDTO {
         this.friendId = friend.getId();
         this.nickname = friend.getNickname();
         this.songId = friend.getSongId();
+        this.email = friend.getEmail();
         this.profileImagePath = friend.getProfileImagePath();
     }
 }
