@@ -8,7 +8,6 @@ import lombok.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -41,11 +40,11 @@ public class User {
 
     //유저가 친구 요청을 보냈던 친구 관계 목록
     @OneToMany(mappedBy = "follower", fetch = FetchType.LAZY)
-    private Set<Friendship> following;
+    private List<Friendship> following = new ArrayList<>();
 
     //유저가 친구 요청을 받은 친구 관계 목록
     @OneToMany(mappedBy = "following", fetch = FetchType.LAZY)
-    private Set<Friendship> followers;
+    private List<Friendship> followers = new ArrayList<>();
 
     //TODO: 개인캘린더 데이터 OneToOne으로 추가하기
 

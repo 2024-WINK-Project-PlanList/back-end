@@ -41,8 +41,8 @@ public class FriendshipService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 ID입니다."));
 
         List<Friendship> friendships = (isFollower) ?
-                friendshipRepository.findAllByFollower(standardUser) :
-                friendshipRepository.findAllByFollowing(standardUser);
+                standardUser.getFollowing() :
+                standardUser.getFollowers();
 
         return friendships
                 .stream()
