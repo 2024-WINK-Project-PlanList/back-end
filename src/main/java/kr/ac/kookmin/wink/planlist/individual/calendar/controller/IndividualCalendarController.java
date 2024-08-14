@@ -1,8 +1,5 @@
 package kr.ac.kookmin.wink.planlist.individual.calendar.controller;
 
-import kr.ac.kookmin.wink.planlist.individual.calendar.domain.IndividualCalendar;
-import kr.ac.kookmin.wink.planlist.individual.calendar.dto.IndividualCalendarCreateRequestDTO;
-import kr.ac.kookmin.wink.planlist.individual.calendar.dto.IndividualCalendarRequestDTO;
 import kr.ac.kookmin.wink.planlist.individual.calendar.dto.IndividualCalendarResponseDTO;
 import kr.ac.kookmin.wink.planlist.individual.calendar.service.IndividualCalendarService;
 import lombok.RequiredArgsConstructor;
@@ -18,34 +15,33 @@ public class IndividualCalendarController {
 
     /**
      * 캘린더 생성
-     * @param individualCalendarCreateRequestDTO
+     * @param userId
      * @return 200 or Error
      */
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody IndividualCalendarCreateRequestDTO individualCalendarCreateRequestDTO) {
-        individualCalendarService.create(individualCalendarCreateRequestDTO);
+    @PostMapping("/create/{userId}")
+    public ResponseEntity<?> create(@PathVariable Long userId) {
+        individualCalendarService.create(userId);
         return ResponseEntity.ok().build();
     }
 
     /**
-     * 캘린더 호출
+     * calendarId로 캘린더 호출
      * @param calendarId
-     * @return 캘린더 정보 (IndividualCalender)
+     * @return 캘린더 정보 (IndividualCalendarResponseDTO)
      */
-    @GetMapping("/{calendarId}")
+    @GetMapping("/my/{calendarId}")
     public ResponseEntity<IndividualCalendarResponseDTO> getIndividualCalender(@PathVariable("calendarId") Long calendarId) {
         return ResponseEntity.ok(individualCalendarService.getIndividualCalendar(calendarId));
     }
 
     /**
-     * 캘린더 이름 수정
-     * @param individualCalendarRequestDTO
-     * @return 200 or 400
+     * userId로 캘린더 호출, 친구 캘린더 호출에 사용
+     * @param userId
+     * @return 캘린더 정보 (IndividualCalendarResponseDTO)
      */
-    @PostMapping("/rename")
-    public ResponseEntity<?> rename(@RequestBody IndividualCalendarRequestDTO individualCalendarRequestDTO) {
-        individualCalendarService.rename(individualCalendarRequestDTO);
-        return ResponseEntity.ok().build();
+    @GetMapping("/other/{userId}")
+    public ResponseEntity<IndividualCalendarResponseDTO> getIndividualCalenderByUserId(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(individualCalendarService.getIndividualCalenderByUserId(userId));
     }
 
     /**
