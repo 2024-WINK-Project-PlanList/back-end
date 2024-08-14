@@ -22,5 +22,5 @@ public class IndividualCalendar {
     @JoinColumn(name = "user_id")
     private User user;
 
-    //todo: IndividualSchedule과 onetomany 매핑
+    //todo: IndividualSchedule과 OnetoMany 매핑
 }

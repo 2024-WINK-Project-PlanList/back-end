@@ -12,6 +12,6 @@ public class IndividualCalendarResponseDTO {
     private String calenderName;
     private Long userId;
 
-    //todo: 개인 스케쥴 리스트 추가 예정
+    //todo: 개인스케쥴 리스트 추가 예정
     //private List<IndividualSchedule> individualScheduleList;
 }

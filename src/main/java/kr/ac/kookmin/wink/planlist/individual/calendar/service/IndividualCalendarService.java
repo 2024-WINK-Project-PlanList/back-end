@@ -17,7 +17,7 @@ public class IndividualCalendarService {
     private final IndividualCalendarRepository individualCalendarRepository;
 
     /**
-     * 개인 캘린더 생성
+     * 개인캘린더 생성
      * @param userId
      */
     public void create(Long userId) {

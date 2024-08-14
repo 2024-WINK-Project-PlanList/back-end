@@ -27,7 +27,7 @@ public class IndividualCalendarController {
     /**
      * calendarId로 캘린더 호출
      * @param calendarId
-     * @return 캘린더 정보 (IndividualCalendarResponseDTO)
+     * @return 캘린더 정보(IndividualCalendarResponseDTO)
      */
     @GetMapping("/my/{calendarId}")
     public ResponseEntity<IndividualCalendarResponseDTO> getIndividualCalender(@PathVariable("calendarId") Long calendarId) {
@@ -37,7 +37,7 @@ public class IndividualCalendarController {
     /**
      * userId로 캘린더 호출, 친구 캘린더 호출에 사용
      * @param userId
-     * @return 캘린더 정보 (IndividualCalendarResponseDTO)
+     * @return 캘린더 정보(IndividualCalendarResponseDTO)
      */
     @GetMapping("/other/{userId}")
     public ResponseEntity<IndividualCalendarResponseDTO> getIndividualCalenderByUserId(@PathVariable("userId") Long userId) {
