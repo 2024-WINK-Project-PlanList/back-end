@@ -36,41 +36,22 @@ class IndividualCalendarControllerTest {
     @Test
     void create() throws Exception {
         //given
-        String url = "/calendar/individual/create";
-        String requestJson = "{" +
-                "\"calenderName\":\"test\"," +
-                "\"userId\":\"1\"" +
-                "}";
-
+        String url = "/calendar/individual/create/1";
         UserDTO userDTO = userService.getOrRegisterTempAccount(1L).getUser();
 
-        User user = User.builder()
-                .id(userDTO.getUserId())
-                .name("test")
-                .build();
-
-        IndividualCalendar responseCalendar = IndividualCalendar.builder()
-                .id(1L)
-                .calendarName("test")
-                .user(user)
-                .build();
-
         //when & then
-
         ResultActions result = mockMvc
-                .perform(post(url)
-                .contentType("application/json")
-                .content(requestJson))
+                .perform(post(url))
                 .andExpect(status().isOk())
                 .andDo(print());
 
     }
 
-    @DisplayName("캘린더 호출 테스트")
+    @DisplayName("내 캘린더 호출 테스트")
     @Test
-    void getIndividualCalender() throws Exception {
+    void getMyIndividualCalender() throws Exception {
         //given
-        String url = "/calendar/individual/4";
+        String url = "/calendar/individual/my/4";
 
         UserDTO userDTO = userService.getOrRegisterTempAccount(1L).getUser();
 
@@ -80,7 +61,6 @@ class IndividualCalendarControllerTest {
                 .build();
 
         IndividualCalendar individualCalendar = IndividualCalendar.builder()
-                .calendarName("testcalendar2")
                 .user(user)
                 .build();
 
@@ -94,12 +74,11 @@ class IndividualCalendarControllerTest {
 
     }
 
-    @DisplayName("캘린더 이름 수정 테스트")
+    @DisplayName("다른 유저 캘린더 호출 테스트")
     @Test
-    void rename() throws Exception {
+    void getOtherIndividualCalender() throws Exception {
         //given
-        String url = "/calendar/individual/rename";
-
+        String url = "/calendar/individual/other/3";
         UserDTO userDTO = userService.getOrRegisterTempAccount(1L).getUser();
 
         User user = User.builder()
@@ -108,24 +87,15 @@ class IndividualCalendarControllerTest {
                 .build();
 
         IndividualCalendar individualCalendar = IndividualCalendar.builder()
-                .id(3L)
-                .calendarName("testcalendar")
                 .user(user)
                 .build();
 
         individualCalendarRepository.save(individualCalendar);
 
-        String requestJson = "{" +
-                "\"calendarId\":3," +
-                "\"calendarName\":\"test\"," +
-                "\"userId\":\"1\"" +
-                "}";
-
         //when & then
-        mockMvc.perform(post(url).contentType("application/json").content(requestJson))
+        mockMvc.perform(get(url))
                 .andExpect(status().isOk())
                 .andDo(print());
-
     }
 
     @DisplayName("캘린더 삭제 테스트")
@@ -143,7 +113,6 @@ class IndividualCalendarControllerTest {
 
         IndividualCalendar individualCalendar = IndividualCalendar.builder()
                 .id(1L)
-                .calendarName("testcalendar")
                 .user(user)
                 .build();
 

@@ -18,8 +18,6 @@ public class IndividualCalendar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String calendarName;
-
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
