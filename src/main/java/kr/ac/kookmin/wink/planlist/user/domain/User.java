@@ -1,6 +1,7 @@
 package kr.ac.kookmin.wink.planlist.user.domain;
 
 import jakarta.persistence.*;
+import kr.ac.kookmin.wink.planlist.individual.calendar.domain.IndividualCalendar;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -35,4 +36,6 @@ public class User {
     private Timestamp createdAt;
 
     //TODO: 개인캘린더 데이터 OneToOne으로 추가하기
+    @OneToOne(mappedBy = "user")
+    private IndividualCalendar individualCalendar;
 }
