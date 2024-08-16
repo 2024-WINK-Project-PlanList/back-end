@@ -9,7 +9,6 @@ import lombok.Getter;
 @Getter
 public class IndividualCalendarResponseDTO {
     private Long calendarId;
-    private String calenderName;
     private Long userId;
 
     //todo: 개인스케쥴 리스트 추가 예정
