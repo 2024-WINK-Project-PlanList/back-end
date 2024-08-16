@@ -41,8 +41,8 @@ public class FriendshipService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 ID입니다."));
 
         List<Friendship> friendships = (isFollower) ?
-                standardUser.getFollowing() :
-                standardUser.getFollowers();
+                friendshipRepository.findAllByFollower(standardUser) :
+                friendshipRepository.findAllByFollowing(standardUser);
 
         return friendships
                 .stream()
@@ -50,7 +50,7 @@ public class FriendshipService {
                 .toList();
     }
 
-    public void createFriendship(CreateFriendshipRequestDTO requestDTO, Long currentTime) {
+    public Friendship createFriendship(CreateFriendshipRequestDTO requestDTO, Long currentTime) {
         Long followerId = requestDTO.getFollowerId();
         Long followingId = requestDTO.getFollowingId();
         User follower = userRepository.findById(followerId)
@@ -65,7 +65,7 @@ public class FriendshipService {
                 .requestedAt(new Timestamp(currentTime))
                 .build();
 
-        friendshipRepository.save(friendship);
+        return friendshipRepository.save(friendship);
     }
 
     public void accept(Long friendshipId) {

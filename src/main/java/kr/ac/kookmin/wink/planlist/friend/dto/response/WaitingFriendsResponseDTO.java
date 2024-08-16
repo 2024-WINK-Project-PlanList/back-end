@@ -17,7 +17,7 @@ public class WaitingFriendsResponseDTO {
     private String profileImagePath;
 
     public WaitingFriendsResponseDTO(Friendship friendship, boolean isFollower) {
-        this(friendship.getId(), (isFollower) ? friendship.getFollower() : friendship.getFollowing(), isFollower);
+        this(friendship.getId(), (isFollower) ? friendship.getFollowing() : friendship.getFollower(), isFollower);
     }
 
     protected WaitingFriendsResponseDTO(Long friendshipId, User anotherUser, boolean isFollower) {

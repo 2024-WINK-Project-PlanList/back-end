@@ -26,7 +26,7 @@ public class User {
 
     private String nickname;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "profile_image_url")
@@ -40,11 +40,11 @@ public class User {
 
     //유저가 친구 요청을 보냈던 친구 관계 목록
     @OneToMany(mappedBy = "follower", fetch = FetchType.LAZY)
-    private List<Friendship> following = new ArrayList<>();
+    private List<Friendship> following;
 
     //유저가 친구 요청을 받은 친구 관계 목록
     @OneToMany(mappedBy = "following", fetch = FetchType.LAZY)
-    private List<Friendship> followers = new ArrayList<>();
+    private List<Friendship> followers;
 
     //TODO: 개인캘린더 데이터 OneToOne으로 추가하기
 
