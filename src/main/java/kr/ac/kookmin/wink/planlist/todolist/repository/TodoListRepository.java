@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TodoListRepository extends JpaRepository<TodoList, Long> {
-    // 추가적인 커스텀 메서드가 필요하다면 여기에 정의할 수 있습니다.
 }
