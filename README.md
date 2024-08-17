@@ -4,5 +4,6 @@
 - Framework: Spring Boot (3.3.2)
 - DB: MySQL
 ---
-## 주요 기능
+## 참고
+DB 연결 O 작동 O
 
