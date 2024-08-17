@@ -18,13 +18,10 @@ public class TodoList {
     // 기본 생성자 (필수)
     public TodoList() {}
 
-    // 생성자: 필드를 초기화할 때 사용할 수 있습니다.
-    public TodoList(String task, boolean completed) {
-        this.task = task;
-        this.completed = completed;
-    }
 
-    // Getter and Setter for id
+    /*
+    쓰이지 않을까..?
+     */
     public Long getId() {
         return id;
     }
@@ -33,16 +30,13 @@ public class TodoList {
         this.id = id;
     }
 
-    // Getter and Setter for task
     public String getTask() {
         return task;
     }
-
     public void setTask(String task) {
         this.task = task;
     }
 
-    // Getter and Setter for completed
     public boolean isCompleted() {
         return completed;
     }
@@ -51,7 +45,7 @@ public class TodoList {
         this.completed = completed;
     }
 
-    // toString 메서드 (선택 사항)
+    // toString 메서드
     @Override
     public String toString() {
         return "TodoList{" +
