@@ -5,6 +5,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Getter
+@Setter
 public class KakaoLoginRequestDTO {
     private String accessToken;
 }

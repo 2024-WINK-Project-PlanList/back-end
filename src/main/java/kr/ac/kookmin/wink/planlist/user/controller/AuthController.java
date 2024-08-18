@@ -1,6 +1,5 @@
 package kr.ac.kookmin.wink.planlist.user.controller;
 
-import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.dto.request.KakaoLoginRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.request.LoginRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.request.RegisterRequestDTO;
