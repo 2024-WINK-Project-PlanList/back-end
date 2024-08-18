@@ -1,7 +1,7 @@
 package kr.ac.kookmin.wink.planlist.global.config;
 
-import kr.ac.kookmin.wink.planlist.global.config.jwt.TokenAuthenticationFilter;
-import kr.ac.kookmin.wink.planlist.global.config.jwt.TokenProvider;
+import kr.ac.kookmin.wink.planlist.global.jwt.TokenAuthenticationFilter;
+import kr.ac.kookmin.wink.planlist.global.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

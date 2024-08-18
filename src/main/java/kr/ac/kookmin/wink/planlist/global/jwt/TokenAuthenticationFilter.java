@@ -1,4 +1,4 @@
-package kr.ac.kookmin.wink.planlist.global.config.jwt;
+package kr.ac.kookmin.wink.planlist.global.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
