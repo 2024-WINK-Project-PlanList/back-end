@@ -3,6 +3,7 @@ package kr.ac.kookmin.wink.planlist.user.domain;
 import jakarta.persistence.*;
 import kr.ac.kookmin.wink.planlist.friend.domain.FriendStatus;
 import kr.ac.kookmin.wink.planlist.friend.domain.Friendship;
+import kr.ac.kookmin.wink.planlist.individual.calendar.domain.IndividualCalendar;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -45,8 +46,9 @@ public class User {
     //유저가 친구 요청을 받은 친구 관계 목록
     @OneToMany(mappedBy = "following", fetch = FetchType.LAZY)
     private List<Friendship> followers;
-
-    //TODO: 개인캘린더 데이터 OneToOne으로 추가하기
+  
+    @OneToOne(mappedBy = "user")
+    private IndividualCalendar individualCalendar;
 
     public List<Friendship> getFriendshipsByStatus(FriendStatus status) {
         List<Friendship> friendships = new ArrayList<>();
