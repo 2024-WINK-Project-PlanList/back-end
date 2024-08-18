@@ -1,6 +1,7 @@
 package kr.ac.kookmin.wink.planlist.individual.schedule.domain;
 
 import jakarta.persistence.*;
+import kr.ac.kookmin.wink.planlist.individual.calendar.domain.IndividualCalendar;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -11,8 +12,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Setter
 @Getter
-//@Table(name = "\"individual_schedule\"")
-//@Entity
+@Table(name = "\"individual_schedule\"")
+@Entity
 public class IndividualSchedule {
 
     @Id
@@ -20,15 +21,19 @@ public class IndividualSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String schedule_content;
+    private String scheduleContent;
 
     private LocalDateTime startDate;
 
     private LocalDateTime endDate;
 
-    private Integer openStatus;
+    @Column(name = "open_status")
+    @Enumerated(EnumType.STRING)
+    private IndividualScheduleOpenStatus openStatus;
 
-//    @ManyToOne
-//    @JoinColumn(name = "calender_id")
-//    private IndividualCalender individualCalender;
+    private Integer colorId;
+
+    @ManyToOne
+    @JoinColumn(name = "calender_id")
+    private IndividualCalendar individualCalender;
 }
