@@ -2,11 +2,13 @@ package kr.ac.kookmin.wink.planlist.global.jwt;
 
 import io.jsonwebtoken.*;
 import jakarta.xml.bind.DatatypeConverter;
+import kr.ac.kookmin.wink.planlist.global.security.CustomUserDetailsService;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -21,6 +23,7 @@ import java.util.Set;
 public class TokenProvider {
     private final JwtProperties jwtProperties;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+    private final CustomUserDetailsService userDetailsService;
 
     private Key createSecretKey() {
         byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(jwtProperties.getSecretKey());
@@ -61,16 +64,15 @@ public class TokenProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
+        String email = claims.getSubject();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(
                 new SimpleGrantedAuthority("ROLE_USER")
         );
 
         return new UsernamePasswordAuthenticationToken(
-                new org.springframework.security.core.userdetails.User(
-                    claims.getSubject(),
-                    "",
-                    authorities
-                ),
+                userDetails,
                 token,
                 authorities
         );
