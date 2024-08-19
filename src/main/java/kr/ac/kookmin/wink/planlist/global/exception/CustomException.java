@@ -14,6 +14,6 @@ public class CustomException extends RuntimeException {
     }
 
     public CustomException(Throwable cause) {
-        this(DefaultErrorCode.DEFAULT, cause);
+        this(GlobalErrorCode.DEFAULT, cause);
     }
 }
