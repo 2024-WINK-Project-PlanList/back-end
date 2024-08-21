@@ -26,7 +26,6 @@ public class IndividualCalendar {
     @JoinColumn(name = "user_id")
     private User user;
 
-    //todo: IndividualSchedule과 OnetoMany 매핑
-//    @OneToMany(mappedBy = "individualCalendar")
-//    private List<IndividualSchedule> individualScheduleList = new ArrayList<>();
+    @OneToMany(mappedBy = "individualCalendar")
+    private List<IndividualSchedule> individualScheduleList = new ArrayList<>();
 }

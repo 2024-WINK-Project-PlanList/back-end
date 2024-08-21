@@ -3,10 +3,16 @@ package kr.ac.kookmin.wink.planlist.individual.calendar.service;
 import kr.ac.kookmin.wink.planlist.individual.calendar.domain.IndividualCalendar;
 import kr.ac.kookmin.wink.planlist.individual.calendar.dto.IndividualCalendarResponseDTO;
 import kr.ac.kookmin.wink.planlist.individual.calendar.repository.IndividualCalendarRepository;
+import kr.ac.kookmin.wink.planlist.individual.schedule.domain.IndividualSchedule;
+import kr.ac.kookmin.wink.planlist.individual.schedule.dto.IndividualScheduleResponseDTO;
+import kr.ac.kookmin.wink.planlist.individual.schedule.repository.IndividualScheduleRepository;
+import kr.ac.kookmin.wink.planlist.individual.schedule.service.IndividualScheduleService;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -15,6 +21,7 @@ public class IndividualCalendarService {
     private final IndividualCalendarRepository calenderRepository;
     private final UserRepository userRepository;
     private final IndividualCalendarRepository individualCalendarRepository;
+    private final IndividualScheduleService individualScheduleService;
 
     /**
      * 개인캘린더 생성
@@ -41,10 +48,12 @@ public class IndividualCalendarService {
         IndividualCalendar individualCalendar = calenderRepository.findById(calendarId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid calendar id: " + calendarId));
 
+        List<IndividualScheduleResponseDTO> individualSchedules = individualScheduleService.getSchedules(individualCalendar);
+
         return IndividualCalendarResponseDTO.builder()
                 .calendarId(individualCalendar.getId())
                 .userId(individualCalendar.getUser().getId())
-                //todo: 스케쥴 리스트 추가
+                .individualScheduleList(individualSchedules)
                 .build();
     }
 
@@ -57,10 +66,12 @@ public class IndividualCalendarService {
         IndividualCalendar individualCalendar = calenderRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + userId));
 
+        List<IndividualScheduleResponseDTO> individualSchedules = individualScheduleService.getSchedules(individualCalendar);
+
         return IndividualCalendarResponseDTO.builder()
                 .calendarId(individualCalendar.getId())
                 .userId(individualCalendar.getUser().getId())
-                //todo: 스케쥴 리스트 추가
+                .individualScheduleList(individualSchedules)
                 .build();
     }
 
