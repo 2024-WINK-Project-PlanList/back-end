@@ -26,6 +26,7 @@ public class IndividualCalendar {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Builder.Default
     @OneToMany(mappedBy = "individualCalendar")
     private List<IndividualSchedule> individualScheduleList = new ArrayList<>();
 }

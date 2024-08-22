@@ -59,13 +59,14 @@ public class IndividualScheduleService {
                     .orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + userId)));
         }
 
-        individualSchedule.setContent(individualScheduleRequestDTO.getContent());
-        individualSchedule.setStartDate(individualScheduleRequestDTO.getStartDate());
-        individualSchedule.setEndDate(individualScheduleRequestDTO.getEndDate());
-        individualSchedule.setOpenStatus(individualScheduleRequestDTO.getOpenStatus());
-        individualSchedule.setColorId(individualScheduleRequestDTO.getColorId());
-        individualSchedule.setScheduleMemberList(userList);
-        individualScheduleRepository.save(individualSchedule);
+//        individualSchedule.updateSchedule(individualScheduleRequestDTO, userList);
+//        individualSchedule.setContent(individualScheduleRequestDTO.getContent());
+//        individualSchedule.setStartDate(individualScheduleRequestDTO.getStartDate());
+//        individualSchedule.setEndDate(individualScheduleRequestDTO.getEndDate());
+//        individualSchedule.setOpenStatus(individualScheduleRequestDTO.getOpenStatus());
+//        individualSchedule.setColorId(individualScheduleRequestDTO.getColorId());
+//        individualSchedule.setScheduleMemberList(userList);
+        individualScheduleRepository.save(individualSchedule.updateSchedule(individualScheduleRequestDTO, userList));
     }
 
     public void deleteSchedule(Long scheduleId) {

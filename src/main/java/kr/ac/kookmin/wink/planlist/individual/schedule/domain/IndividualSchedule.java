@@ -2,6 +2,7 @@ package kr.ac.kookmin.wink.planlist.individual.schedule.domain;
 
 import jakarta.persistence.*;
 import kr.ac.kookmin.wink.planlist.individual.calendar.domain.IndividualCalendar;
+import kr.ac.kookmin.wink.planlist.individual.schedule.dto.IndividualScheduleRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import lombok.*;
 
@@ -36,6 +37,7 @@ public class IndividualSchedule {
 
     private Integer colorId;
 
+    @Builder.Default
     @ManyToMany
     @JoinTable(name = "user_schedule",
                 joinColumns = @JoinColumn(name = "schedule_id"),
@@ -45,4 +47,14 @@ public class IndividualSchedule {
     @ManyToOne
     @JoinColumn(name = "calendar_id")
     private IndividualCalendar individualCalendar;
+
+    public IndividualSchedule updateSchedule(IndividualScheduleRequestDTO individualScheduleRequestDTO, List<User> scheduleMemberList) {
+        this.content = individualScheduleRequestDTO.getContent();
+        this.startDate = individualScheduleRequestDTO.getStartDate();
+        this.endDate = individualScheduleRequestDTO.getEndDate();
+        this.openStatus = individualScheduleRequestDTO.getOpenStatus();
+        this.colorId = individualScheduleRequestDTO.getColorId();
+        this.scheduleMemberList = scheduleMemberList;
+        return this;
+    }
 }
