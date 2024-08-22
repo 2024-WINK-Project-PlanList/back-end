@@ -1,7 +1,7 @@
 package kr.ac.kookmin.wink.planlist.individual.schedule.dto;
 
 import kr.ac.kookmin.wink.planlist.individual.schedule.domain.IndividualSchedule;
-import kr.ac.kookmin.wink.planlist.individual.schedule.domain.IndividualScheduleOpenStatus;
+import kr.ac.kookmin.wink.planlist.individual.schedule.domain.ScheduleOpenStatus;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,10 +16,10 @@ import java.util.List;
 @Getter
 public class IndividualScheduleResponseDTO {
     private Long id;
-    private String scheduleContent;
+    private String content;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private IndividualScheduleOpenStatus openStatus;
+    private ScheduleOpenStatus openStatus;
     private Integer colorId;
     private List<Long> scheduleMemberList;
     private Long calenderId;
@@ -35,7 +35,7 @@ public class IndividualScheduleResponseDTO {
 
         return IndividualScheduleResponseDTO.builder()
                 .id(schedule.getId())
-                .scheduleContent(schedule.getScheduleContent())
+                .content(schedule.getContent())
                 .startDate(schedule.getStartDate())
                 .endDate(schedule.getEndDate())
                 .openStatus(schedule.getOpenStatus())

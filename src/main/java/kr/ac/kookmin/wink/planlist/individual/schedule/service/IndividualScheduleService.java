@@ -31,7 +31,7 @@ public class IndividualScheduleService {
                     .orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + userId)));
         }
         individualScheduleRepository.save(IndividualSchedule.builder()
-                        .scheduleContent(individualScheduleRequestDTO.getScheduleContent())
+                        .content(individualScheduleRequestDTO.getContent())
                         .startDate(individualScheduleRequestDTO.getStartDate())
                         .endDate(individualScheduleRequestDTO.getEndDate())
                         .openStatus(individualScheduleRequestDTO.getOpenStatus())
@@ -59,7 +59,7 @@ public class IndividualScheduleService {
                     .orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + userId)));
         }
 
-        individualSchedule.setScheduleContent(individualScheduleRequestDTO.getScheduleContent());
+        individualSchedule.setContent(individualScheduleRequestDTO.getContent());
         individualSchedule.setStartDate(individualScheduleRequestDTO.getStartDate());
         individualSchedule.setEndDate(individualScheduleRequestDTO.getEndDate());
         individualSchedule.setOpenStatus(individualScheduleRequestDTO.getOpenStatus());

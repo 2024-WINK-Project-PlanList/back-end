@@ -2,7 +2,6 @@ package kr.ac.kookmin.wink.planlist.individual.schedule.domain;
 
 import jakarta.persistence.*;
 import kr.ac.kookmin.wink.planlist.individual.calendar.domain.IndividualCalendar;
-import kr.ac.kookmin.wink.planlist.individual.schedule.dto.IndividualScheduleRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import lombok.*;
 
@@ -25,7 +24,7 @@ public class IndividualSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String scheduleContent;
+    private String content;
 
     private LocalDateTime startDate;
 
@@ -33,7 +32,7 @@ public class IndividualSchedule {
 
     @Column(name = "open_status")
     @Enumerated(EnumType.STRING)
-    private IndividualScheduleOpenStatus openStatus;
+    private ScheduleOpenStatus openStatus;
 
     private Integer colorId;
 

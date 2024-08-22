@@ -32,13 +32,13 @@ public class IndividualScheduleController {
         return individualScheduleService.getSchedules(calendarId);
     }
 
-    @PatchMapping("/update/{scheduleId}")
+    @PatchMapping("/{scheduleId}")
     public ResponseEntity<?> updateSchedule(@PathVariable Long scheduleId, @RequestBody IndividualScheduleRequestDTO individualScheduleRequestDTO) {
         individualScheduleService.updateSchedule(scheduleId, individualScheduleRequestDTO);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/delete/{scheduleId}")
+    @DeleteMapping("/{scheduleId}")
     public ResponseEntity<?> deleteSchedule(@PathVariable Long scheduleId) {
         individualScheduleService.deleteSchedule(scheduleId);
         return ResponseEntity.ok().build();

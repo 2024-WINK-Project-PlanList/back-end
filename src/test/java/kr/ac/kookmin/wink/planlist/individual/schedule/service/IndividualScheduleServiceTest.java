@@ -1,33 +1,28 @@
 package kr.ac.kookmin.wink.planlist.individual.schedule.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import kr.ac.kookmin.wink.planlist.individual.calendar.domain.IndividualCalendar;
 import kr.ac.kookmin.wink.planlist.individual.calendar.repository.IndividualCalendarRepository;
 import kr.ac.kookmin.wink.planlist.individual.calendar.service.IndividualCalendarService;
 import kr.ac.kookmin.wink.planlist.individual.schedule.domain.IndividualSchedule;
-import kr.ac.kookmin.wink.planlist.individual.schedule.domain.IndividualScheduleOpenStatus;
+import kr.ac.kookmin.wink.planlist.individual.schedule.domain.ScheduleOpenStatus;
 import kr.ac.kookmin.wink.planlist.individual.schedule.dto.IndividualScheduleRequestDTO;
 import kr.ac.kookmin.wink.planlist.individual.schedule.dto.IndividualScheduleResponseDTO;
 import kr.ac.kookmin.wink.planlist.individual.schedule.repository.IndividualScheduleRepository;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
 import kr.ac.kookmin.wink.planlist.user.service.UserService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
@@ -69,10 +64,10 @@ class IndividualScheduleServiceTest {
     }
     private IndividualSchedule addTestSchedule(int k, IndividualCalendar individualCalendar) {
         IndividualSchedule individualSchedule = IndividualSchedule.builder()
-                .scheduleContent("test schedule " + String.valueOf(k))
+                .content("test schedule " + String.valueOf(k))
                 .startDate(LocalDateTime.now())
                 .endDate(LocalDateTime.now().plusDays(k/100000))
-                .openStatus(IndividualScheduleOpenStatus.PUBLIC)
+                .openStatus(ScheduleOpenStatus.PUBLIC)
                 .colorId(k)
                 .individualCalendar(individualCalendar)
                 .build();
@@ -94,7 +89,7 @@ class IndividualScheduleServiceTest {
                 "test schedule 100",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(5),
-                IndividualScheduleOpenStatus.PUBLIC,
+                ScheduleOpenStatus.PUBLIC,
                 345678,
                 memberList,
                 1L
@@ -153,7 +148,7 @@ class IndividualScheduleServiceTest {
                 "changed content",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(2),
-                IndividualScheduleOpenStatus.PRIVATE,
+                ScheduleOpenStatus.PRIVATE,
                 345678,
                 memberList,
                 1L
@@ -165,7 +160,7 @@ class IndividualScheduleServiceTest {
 
         //then
         IndividualSchedule individualSchedule = individualScheduleRepository.findById(1L).get();
-        assertThat(request.getScheduleContent()).isEqualTo(individualSchedule.getScheduleContent());
+        assertThat(request.getContent()).isEqualTo(individualSchedule.getContent());
         assertThat(request.getStartDate()).isEqualTo(individualSchedule.getStartDate());
         assertThat(request.getEndDate()).isEqualTo(individualSchedule.getEndDate());
         assertThat(request.getOpenStatus()).isEqualTo(individualSchedule.getOpenStatus());
