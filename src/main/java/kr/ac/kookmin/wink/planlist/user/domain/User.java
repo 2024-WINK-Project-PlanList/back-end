@@ -53,6 +53,12 @@ public class User {
     @OneToOne(mappedBy = "user")
     private IndividualCalendar individualCalendar;
 
+    public void updateUserProfile(String nickname, String songId, String comment) {
+        this.nickname = nickname;
+        this.songId = songId;
+        this.comment = comment;
+    }
+
     public List<Friendship> getFriendshipsByStatus(FriendStatus status) {
         List<Friendship> friendships = new ArrayList<>();
 

@@ -43,13 +43,8 @@ public class UserService {
 
     @Transactional
     public void changeUserProfile(ChangeProfileRequestDTO requestDTO, User user) {
-        user.setNickname(requestDTO.getNickname());
-        user.setSongId(requestDTO.getSongId());
-        user.setComment(requestDTO.getComment());
-
+        user.updateUserProfile(requestDTO.getNickname(), requestDTO.getSongId(), requestDTO.getComment());
         uploadUserProfileImage(user, requestDTO.getProfileImage());
-
-        userRepository.save(user);
     }
 
     private void uploadUserProfileImage(User user, String imageBase64) {
