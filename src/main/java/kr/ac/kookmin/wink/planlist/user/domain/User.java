@@ -12,7 +12,7 @@ import java.util.List;
 
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter
 @Getter
 @Table(name = "\"user\"")
@@ -35,6 +35,9 @@ public class User {
 
     @Column(name = "song_id")
     private String songId;
+
+    @Column(name = "comment")
+    private String comment;
 
     @Column(name = "created_at")
     private Timestamp createdAt;
