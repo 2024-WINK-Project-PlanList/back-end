@@ -35,13 +35,6 @@ public class TodolistService {
                 .collect(Collectors.toList());
     }
 
-    // 리스트 가져오는건데 쓰이지않을까..
-    public List<TodolistDTO> getTasksByUserId(int userId) {
-        List<Todolist> tasks = todolistRepository.findByUserId(userId);
-        return tasks.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
 
     // ID로 투두 리스트 가져오기
     public Optional<TodolistDTO> getTaskById(int id) {
