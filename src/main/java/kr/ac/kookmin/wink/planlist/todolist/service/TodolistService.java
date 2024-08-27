@@ -35,7 +35,8 @@ public class TodolistService {
                 .collect(Collectors.toList());
     }
 
-    // 특정 사용자에 대한 모든 투두 리스트 가져오기
+    // 리스트 가져오는건데 쓰이지않을까..
+
     public List<TodolistDTO> getTasksByUserId(int userId) {
         List<Todolist> tasks = todolistRepository.findByUserId(userId);
         return tasks.stream()
@@ -68,7 +69,8 @@ public class TodolistService {
         }).orElse(false);
     }
 
-    // DTO를 엔티티로 변환하는 메서드
+
+
     private Todolist convertToEntity(TodolistDTO todolistDTO) {
         return new Todolist(
                 todolistDTO.getContent(),
@@ -77,13 +79,12 @@ public class TodolistService {
         );
     }
 
-    // 엔티티를 DTO로 변환하는 메서드
+    // 엔티티 -> DTO 변환
     private TodolistDTO convertToDto(Todolist todolist) {
         return new TodolistDTO(
                 todolist.getTodoListId(),
                 todolist.getContent(),
                 todolist.getCreatedAt(),
-                todolist.isPin(),
                 todolist.getUserId()
         );
     }
