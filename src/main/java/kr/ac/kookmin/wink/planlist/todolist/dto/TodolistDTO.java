@@ -1,3 +1,5 @@
+package kr.ac.kookmin.wink.planlist.todolist.dto;
+
 import java.time.LocalDateTime;
 
 public class TodolistDTO {
@@ -5,7 +7,6 @@ public class TodolistDTO {
     private int todoListId;       // 투두 리스트 ID
     private String content;       // 투두 리스트 내용
     private LocalDateTime createdAt; // 생성일
-    private boolean isPin;        // 고정 여부
     private int userId;           // 사용자 ID
 
     // 기본 생성자
@@ -16,7 +17,6 @@ public class TodolistDTO {
         this.todoListId = todoListId;
         this.content = content;
         this.createdAt = createdAt;
-        this.isPin = isPin;
         this.userId = userId;
     }
 
@@ -44,13 +44,6 @@ public class TodolistDTO {
         this.createdAt = createdAt;
     }
 
-    public boolean isPin() {
-        return isPin;
-    }
-
-    public void setPin(boolean isPin) {
-        this.isPin = isPin;
-    }
 
     public int getUserId() {
         return userId;
@@ -67,7 +60,6 @@ public class TodolistDTO {
                 "todoListId=" + todoListId +
                 ", content='" + content + '\'' +
                 ", createdAt=" + createdAt +
-                ", isPin=" + isPin +
                 ", userId=" + userId +
                 '}';
     }
