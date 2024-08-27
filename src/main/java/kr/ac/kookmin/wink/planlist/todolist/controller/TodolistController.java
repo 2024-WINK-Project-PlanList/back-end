@@ -1,6 +1,6 @@
 package kr.ac.kookmin.wink.planlist.todolist.controller;
 
-import kr.ac.kookmin.wink.planlist.todolist.model.Todolist;
+import kr.ac.kookmin.wink.planlist.todolist.dto.TodolistDTO;
 import kr.ac.kookmin.wink.planlist.todolist.service.TodolistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,30 +22,30 @@ public class TodolistController {
 
     // 할 일 생성
     @PostMapping("/tasks")
-    public ResponseEntity<Todolist> createTask(@RequestBody Todolist todolist) {
-        Todolist createdTask = todolistService.createTask(todolist);
+    public ResponseEntity<TodolistDTO> createTask(@RequestBody TodolistDTO todolistDTO) {
+        TodolistDTO createdTask = todolistService.createTask(todolistDTO);
         return ResponseEntity.ok(createdTask);
     }
 
     // 할 일 조회
     @GetMapping("/tasks")
-    public ResponseEntity<List<Todolist>> getAllTasks() {
-        List<Todolist> tasks = todolistService.getAllTasks();
+    public ResponseEntity<List<TodolistDTO>> getAllTasks() {
+        List<TodolistDTO> tasks = todolistService.getAllTasks();
         return ResponseEntity.ok(tasks);
     }
 
     // ID로 할 일 조회
     @GetMapping("/tasks/{id}")
-    public ResponseEntity<Todolist> getTaskById(@PathVariable int id) {
-        Optional<Todolist> task = todolistService.getTaskById(id);
+    public ResponseEntity<TodolistDTO> getTaskById(@PathVariable int id) {
+        Optional<TodolistDTO> task = todolistService.getTaskById(id);
         return task.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // ID로 할 일 업데이트
     @PutMapping("/tasks/{id}")
-    public ResponseEntity<Todolist> updateTask(@PathVariable int id, @RequestBody Todolist updatedTodolist) {
-        Optional<Todolist> updatedTask = todolistService.updateTask(id, updatedTodolist);
+    public ResponseEntity<TodolistDTO> updateTask(@PathVariable int id, @RequestBody TodolistDTO updatedTodolistDTO) {
+        Optional<TodolistDTO> updatedTask = todolistService.updateTask(id, updatedTodolistDTO);
         return updatedTask.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -55,6 +55,5 @@ public class TodolistController {
     public ResponseEntity<Void> deleteTask(@PathVariable int id) {
         boolean deleted = todolistService.deleteTask(id);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
-    }}
-
-
+    }
+}

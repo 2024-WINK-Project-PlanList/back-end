@@ -1,5 +1,6 @@
 package kr.ac.kookmin.wink.planlist.todolist.service;
 
+import kr.ac.kookmin.wink.planlist.todolist.dto.TodolistDTO;
 import kr.ac.kookmin.wink.planlist.todolist.model.Todolist;
 import kr.ac.kookmin.wink.planlist.todolist.repository.TodolistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TodolistService {
@@ -19,33 +21,42 @@ public class TodolistService {
     }
 
     // 투두 리스트 생성
-    public Todolist createTask(Todolist todolist) {
-        return todolistRepository.save(todolist);
+    public TodolistDTO createTask(TodolistDTO todolistDTO) {
+        Todolist todolist = convertToEntity(todolistDTO);
+        Todolist savedTodolist = todolistRepository.save(todolist);
+        return convertToDto(savedTodolist);
     }
 
     // 모든 투두 리스트 가져오기
-    public List<Todolist> getAllTasks() {
-        return todolistRepository.findAll();
+    public List<TodolistDTO> getAllTasks() {
+        List<Todolist> tasks = todolistRepository.findAll();
+        return tasks.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     // 특정 사용자에 대한 모든 투두 리스트 가져오기
-    public List<Todolist> getTasksByUserId(int userId) {
-        return todolistRepository.findByUserId(userId);
+    public List<TodolistDTO> getTasksByUserId(int userId) {
+        List<Todolist> tasks = todolistRepository.findByUserId(userId);
+        return tasks.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     // ID로 투두 리스트 가져오기
-    public Optional<Todolist> getTaskById(int id) {
-        return todolistRepository.findById(id);
+    public Optional<TodolistDTO> getTaskById(int id) {
+        Optional<Todolist> task = todolistRepository.findById(id);
+        return task.map(this::convertToDto);
     }
 
     // 투두 리스트 업데이트
-    public Optional<Todolist> updateTask(int id, Todolist updatedTodolist) {
+    public Optional<TodolistDTO> updateTask(int id, TodolistDTO updatedTodolistDTO) {
         return todolistRepository.findById(id).map(existingTask -> {
-            existingTask.setContent(updatedTodolist.getContent());
-            existingTask.setCreatedAt(updatedTodolist.getCreatedAt());
-            existingTask.setPin(updatedTodolist.isPin());
-            existingTask.setUserId(updatedTodolist.getUserId());
-            return todolistRepository.save(existingTask);
+            existingTask.setContent(updatedTodolistDTO.getContent());
+            existingTask.setCreatedAt(updatedTodolistDTO.getCreatedAt());
+            existingTask.setUserId(updatedTodolistDTO.getUserId());
+            Todolist updatedTask = todolistRepository.save(existingTask);
+            return convertToDto(updatedTask);
         });
     }
 
@@ -55,5 +66,25 @@ public class TodolistService {
             todolistRepository.delete(existingTask);
             return true;
         }).orElse(false);
+    }
+
+    // DTO를 엔티티로 변환하는 메서드
+    private Todolist convertToEntity(TodolistDTO todolistDTO) {
+        return new Todolist(
+                todolistDTO.getContent(),
+                todolistDTO.getCreatedAt(),
+                todolistDTO.getUserId()
+        );
+    }
+
+    // 엔티티를 DTO로 변환하는 메서드
+    private TodolistDTO convertToDto(Todolist todolist) {
+        return new TodolistDTO(
+                todolist.getTodoListId(),
+                todolist.getContent(),
+                todolist.getCreatedAt(),
+                todolist.isPin(),
+                todolist.getUserId()
+        );
     }
 }

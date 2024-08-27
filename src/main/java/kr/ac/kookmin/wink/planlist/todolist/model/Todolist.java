@@ -26,12 +26,13 @@ public class Todolist {
 
 
 
-    public Todolist(String content, LocalDateTime createdAt, boolean isPin, int userId) {
+    public Todolist(String content, LocalDateTime createdAt, int userId) {
         this.content = content;
         this.createdAt = createdAt;
-        this.isPin = isPin;
         this.userId = userId;
     }
+
+    public Todolist() {}
 
 
     public String getContent() {
@@ -50,13 +51,6 @@ public class Todolist {
         this.createdAt = createdAt;
     }
 
-    public boolean isPin() {
-        return isPin;
-    }
-
-    public void setPin(boolean pin) {
-        isPin = pin;
-    }
 
     public int getUserId() {
         return userId;
@@ -64,5 +58,13 @@ public class Todolist {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public int getTodoListId() {
+        return todoListId;
+    }
+
+    public boolean isPin() {
+        return isPin;
     }
 }
