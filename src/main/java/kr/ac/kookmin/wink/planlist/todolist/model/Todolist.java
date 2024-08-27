@@ -9,6 +9,7 @@ import lombok.Setter;
 @Table(name = "todo_list")
 @Getter
 @Setter
+
 public class Todolist {
 
     @Id
@@ -19,8 +20,11 @@ public class Todolist {
     @Column(name = "content", nullable = false, length = 100)
     private String content;
 
+
+    // DB에 있는디..?
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
 
     @Column(name = "user_id", nullable = false)
     private int userId;
