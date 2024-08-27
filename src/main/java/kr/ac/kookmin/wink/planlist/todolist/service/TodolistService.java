@@ -36,7 +36,6 @@ public class TodolistService {
     }
 
     // 리스트 가져오는건데 쓰이지않을까..
-
     public List<TodolistDTO> getTasksByUserId(int userId) {
         List<Todolist> tasks = todolistRepository.findByUserId(userId);
         return tasks.stream()
