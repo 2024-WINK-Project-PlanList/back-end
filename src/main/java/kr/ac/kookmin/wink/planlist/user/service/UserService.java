@@ -2,16 +2,22 @@ package kr.ac.kookmin.wink.planlist.user.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import jakarta.transaction.Transactional;
+import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.global.jwt.TokenProvider;
+import kr.ac.kookmin.wink.planlist.global.s3.S3Service;
+import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import kr.ac.kookmin.wink.planlist.user.domain.KakaoUserInfo;
 import kr.ac.kookmin.wink.planlist.user.domain.LoginType;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
+import kr.ac.kookmin.wink.planlist.user.dto.request.ChangeProfileRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.request.KakaoLoginRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.request.LoginRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.request.RegisterRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.KakaoLoginResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.RegisterResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
+import kr.ac.kookmin.wink.planlist.user.exception.UserErrorCode;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -24,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -32,11 +39,30 @@ public class UserService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
     private final TokenProvider tokenProvider;
+    private final S3Service s3Service;
 
+    @Transactional
+    public void changeUserProfile(ChangeProfileRequestDTO requestDTO, User user) {
+        user.updateUserProfile(requestDTO.getNickname(), requestDTO.getSongId(), requestDTO.getComment());
+        uploadUserProfileImage(user, requestDTO.getProfileImage());
+    }
+
+    private void uploadUserProfileImage(User user, String imageBase64) {
+        String randomName = UUID.randomUUID().toString();
+        String imagePath = s3Service.uploadBase64Image(imageBase64, "profile/user/", randomName);
+
+        user.setProfileImagePath(imagePath);
+    }
+
+    public UserDTO getCurrentUser(SecurityUser securityUser) {
+        return UserDTO.create(securityUser.getUser());
+    }
+
+    @Transactional
     public RegisterResponseDTO register(RegisterRequestDTO registerRequestDTO, long currentTime) {
         String kakaoAccessToken = registerRequestDTO.getKakaoAccessToken();
         KakaoUserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken)
-                .orElseThrow(() -> new IllegalArgumentException(kakaoAccessToken));
+                .orElseThrow(() -> new CustomException(UserErrorCode.INVALID_KAKAO_ACCESS_TOKEN));
 
         User user = User.builder()
                 .name(kakaoUserInfo.getName())
@@ -59,14 +85,14 @@ public class UserService {
         String accessToken = loginRequestDTO.getAccessToken();
 
         if (!tokenProvider.validToken(accessToken)) {
-            throw new IllegalArgumentException("Invalid access token");
+            throw new CustomException(UserErrorCode.INVALID_ACCESS_TOKEN);
         }
 
         Long userId = tokenProvider.getUserId(accessToken);
 
         User user = userRepository
                 .findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid userId in accessToken"));
+                .orElseThrow(() -> new CustomException(UserErrorCode.INVALID_ACCESS_TOKEN));
 
         return UserDTO.create(user);
     }
@@ -94,15 +120,16 @@ public class UserService {
     public KakaoLoginResponseDTO kakaoLogin(KakaoLoginRequestDTO kakaoLoginRequestDTO) {
         String kakaoAccessToken = kakaoLoginRequestDTO.getAccessToken();
         KakaoUserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken)
-                .orElseThrow(() -> new IllegalArgumentException(kakaoAccessToken));
+                .orElseThrow(() -> new CustomException(UserErrorCode.INVALID_KAKAO_ACCESS_TOKEN));
 
         LoginType type = LoginType.REGISTER;
         String token = kakaoAccessToken;
-        User user = userRepository.findByEmail(kakaoUserInfo.getEmail()).orElse(null);
+        Optional<User> user = userRepository.findByEmail(kakaoUserInfo.getEmail());
 
-        if (user != null) {
+
+        if (user.isPresent()) {
             type = LoginType.EXIST;
-            token = tokenProvider.generateToken(user, Duration.ofDays(7));
+            token = tokenProvider.generateToken(user.get(), Duration.ofDays(7));
         }
 
         return KakaoLoginResponseDTO.builder()
@@ -137,6 +164,8 @@ public class UserService {
         if (bodyText == null) {
             return Optional.empty();
         }
+
+        //System.out.println(bodyText);
 
         JsonObject body = JsonParser.parseString(bodyText).getAsJsonObject();
         JsonObject properties = body.get("properties").getAsJsonObject();

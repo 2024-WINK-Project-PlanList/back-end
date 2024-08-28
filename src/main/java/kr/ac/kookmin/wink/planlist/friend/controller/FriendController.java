@@ -24,14 +24,14 @@ public class FriendController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/accept/{friendshipId}")
+    @PostMapping("/{friendshipId}/accept")
     public ResponseEntity<?> accept(@PathVariable("friendshipId") Long friendshipId) {
         friendshipService.accept(friendshipId);
 
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/delete/{friendshipId}")
+    @DeleteMapping("/{friendshipId}/delete")
     public ResponseEntity<?> delete(@PathVariable("friendshipId") Long friendshipId) {
         friendshipService.delete(friendshipId);
 

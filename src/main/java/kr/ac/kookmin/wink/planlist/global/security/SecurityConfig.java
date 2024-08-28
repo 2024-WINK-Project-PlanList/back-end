@@ -1,4 +1,4 @@
-package kr.ac.kookmin.wink.planlist.global.config;
+package kr.ac.kookmin.wink.planlist.global.security;
 
 import kr.ac.kookmin.wink.planlist.global.jwt.TokenAuthenticationFilter;
 import kr.ac.kookmin.wink.planlist.global.jwt.TokenProvider;

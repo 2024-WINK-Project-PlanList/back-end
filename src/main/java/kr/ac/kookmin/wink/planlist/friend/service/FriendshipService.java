@@ -1,5 +1,6 @@
 package kr.ac.kookmin.wink.planlist.friend.service;
 
+import jakarta.transaction.Transactional;
 import kr.ac.kookmin.wink.planlist.friend.domain.FriendStatus;
 import kr.ac.kookmin.wink.planlist.friend.domain.Friendship;
 import kr.ac.kookmin.wink.planlist.friend.dto.request.CreateFriendshipRequestDTO;
@@ -68,6 +69,7 @@ public class FriendshipService {
         return friendshipRepository.save(friendship);
     }
 
+    @Transactional
     public void accept(Long friendshipId) {
         Friendship friendship = findById(friendshipId);
 
