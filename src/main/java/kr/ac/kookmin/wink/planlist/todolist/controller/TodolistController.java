@@ -29,6 +29,7 @@ public class TodolistController {
 
     // 할 일 조회
     @GetMapping("/tasks")
+
     public ResponseEntity<List<TodolistDTO>> getAllTasks() {
         List<TodolistDTO> tasks = todolistService.getAllTasks();
         return ResponseEntity.ok(tasks);
@@ -37,9 +38,8 @@ public class TodolistController {
     // ID로 할 일 조회
     @GetMapping("/tasks/{id}")
     public ResponseEntity<TodolistDTO> getTaskById(@PathVariable int id) {
-        Optional<TodolistDTO> task = todolistService.getTaskById(id);
-        return task.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        //return ResponseEntity.ok(todolistService.getTaskById(id));
+        return todolistService.getTaskById(id).map(ResponseEntity::ok).orElseThrow(() -> new IllegalArgumentException("test"));
     }
 
     // ID로 할 일 업데이트
