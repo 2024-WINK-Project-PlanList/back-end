@@ -1,0 +1,22 @@
+package kr.ac.kookmin.wink.planlist.individual.schedule.dto;
+
+import kr.ac.kookmin.wink.planlist.individual.schedule.domain.ScheduleOpenStatus;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+public class IndividualScheduleRequestDTO {
+    private String content;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private ScheduleOpenStatus openStatus;
+    private Integer colorId;
+    private List<Long> scheduleMemberList;
+    private Long calendarId;
+}
