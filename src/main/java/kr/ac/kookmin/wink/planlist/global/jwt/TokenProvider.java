@@ -2,6 +2,8 @@ package kr.ac.kookmin.wink.planlist.global.jwt;
 
 import io.jsonwebtoken.*;
 import jakarta.xml.bind.DatatypeConverter;
+import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
+import kr.ac.kookmin.wink.planlist.global.exception.GlobalErrorCode;
 import kr.ac.kookmin.wink.planlist.global.security.CustomUserDetailsService;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -57,8 +59,8 @@ public class TokenProvider {
                     .parseClaimsJws(token);
 
             return true;
-        } catch (JwtException e) {
-            return false;
+        } catch (Exception e) {
+            throw new CustomException(GlobalErrorCode.INVALID_ACCESS_TOKEN);
         }
     }
 
