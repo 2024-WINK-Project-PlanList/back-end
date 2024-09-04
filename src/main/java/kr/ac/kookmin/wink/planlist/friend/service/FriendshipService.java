@@ -6,7 +6,9 @@ import kr.ac.kookmin.wink.planlist.friend.domain.Friendship;
 import kr.ac.kookmin.wink.planlist.friend.dto.request.CreateFriendshipRequestDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.response.UserFriendsResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.response.WaitingFriendsResponseDTO;
+import kr.ac.kookmin.wink.planlist.friend.exception.FriendErrorCode;
 import kr.ac.kookmin.wink.planlist.friend.repository.FriendshipRepository;
+import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +26,12 @@ public class FriendshipService {
 
     public Friendship findById(Long friendshipId) {
         return friendshipRepository.findById(friendshipId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구관계 ID입니다."));
+                .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_FRIENDSHIP_ID));
     }
 
     public List<UserFriendsResponseDTO> findAllFriendsByUser(Long userId) {
         User standardUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 ID입니다."));
+                .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_USER_ID));
 
         return standardUser.getFriendshipsByStatus(FriendStatus.FRIEND)
                 .stream()
@@ -39,7 +41,7 @@ public class FriendshipService {
 
     public List<WaitingFriendsResponseDTO> findAllWaitingFriendshipsByUser(Long userId, boolean isFollower) {
         User standardUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 ID입니다."));
+                .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_USER_ID));
 
         List<Friendship> friendships = (isFollower) ?
                 friendshipRepository.findAllByFollower(standardUser) :
@@ -55,9 +57,9 @@ public class FriendshipService {
         Long followerId = requestDTO.getFollowerId();
         Long followingId = requestDTO.getFollowingId();
         User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new IllegalArgumentException("팔로워 ID로 가져온 유저가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_USER_ID));
         User following = userRepository.findById(followingId)
-                .orElseThrow(() -> new IllegalArgumentException("팔로잉 ID로 가져온 유저가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_USER_ID));
 
         Friendship friendship = Friendship.builder()
                 .follower(follower)
@@ -79,4 +81,8 @@ public class FriendshipService {
     public void delete(Long friendshipId) {
         friendshipRepository.deleteById(friendshipId);
     }
+
+//    public List<User> test(Long userId) {
+//        return userRepository.findAllByUserId(userId);
+//    }
 }
