@@ -1,10 +1,12 @@
 package kr.ac.kookmin.wink.planlist.user.dto.request;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@RequiredArgsConstructor
+@Setter
+@NoArgsConstructor
 public class ChangeProfileRequestDTO {
     private String nickname;
     private String profileImage;
