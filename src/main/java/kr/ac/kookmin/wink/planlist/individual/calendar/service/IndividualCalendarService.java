@@ -1,8 +1,10 @@
 package kr.ac.kookmin.wink.planlist.individual.calendar.service;
 
+import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.individual.calendar.domain.IndividualCalendar;
 import kr.ac.kookmin.wink.planlist.individual.calendar.dto.IndividualCalendarResponseDTO;
 import kr.ac.kookmin.wink.planlist.individual.calendar.repository.IndividualCalendarRepository;
+import kr.ac.kookmin.wink.planlist.individual.exeption.IndividualError;
 import kr.ac.kookmin.wink.planlist.individual.schedule.domain.IndividualSchedule;
 import kr.ac.kookmin.wink.planlist.individual.schedule.dto.IndividualScheduleResponseDTO;
 import kr.ac.kookmin.wink.planlist.individual.schedule.repository.IndividualScheduleRepository;
@@ -29,7 +31,7 @@ public class IndividualCalendarService {
      */
     public void create(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + userId));
+                .orElseThrow(() -> new CustomException(IndividualError.INVALID_USER_ID));
 
         IndividualCalendar individualCalendar = IndividualCalendar.builder()
                 .user(user)
@@ -46,7 +48,7 @@ public class IndividualCalendarService {
      */
     public IndividualCalendarResponseDTO getIndividualCalendar(Long calendarId){
         IndividualCalendar individualCalendar = calenderRepository.findById(calendarId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid calendar id: " + calendarId));
+                .orElseThrow(() -> new CustomException(IndividualError.INVALID_CALENDAR_ID));
 
         List<IndividualScheduleResponseDTO> individualSchedules = individualScheduleService.getSchedules(individualCalendar);
 
@@ -64,7 +66,7 @@ public class IndividualCalendarService {
      */
     public IndividualCalendarResponseDTO getIndividualCalenderByUserId(Long userId){
         IndividualCalendar individualCalendar = calenderRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + userId));
+                .orElseThrow(() -> new CustomException(IndividualError.INVALID_USER_ID));
 
         List<IndividualScheduleResponseDTO> individualSchedules = individualScheduleService.getSchedules(individualCalendar);
 
@@ -85,7 +87,7 @@ public class IndividualCalendarService {
         if (individualCalendarRepository.findById(calendarId).isEmpty()) {
             System.out.println("successfully deleted individual calendar");
         } else {
-            throw new IllegalArgumentException("failed to delete individual calendar");
+            throw new CustomException(IndividualError.INVALID_CALENDAR_ID);
         }
     }
 
