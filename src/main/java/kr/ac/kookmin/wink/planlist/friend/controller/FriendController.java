@@ -31,7 +31,7 @@ public class FriendController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{friendshipId}/delete")
+    @DeleteMapping("/{friendshipId}")
     public ResponseEntity<?> delete(@PathVariable("friendshipId") Long friendshipId) {
         friendshipService.delete(friendshipId);
 

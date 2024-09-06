@@ -2,7 +2,6 @@ package kr.ac.kookmin.wink.planlist.user.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import jakarta.transaction.Transactional;
 import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.global.jwt.TokenProvider;
 import kr.ac.kookmin.wink.planlist.global.s3.S3Service;
@@ -25,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.sql.Timestamp;
@@ -34,6 +34,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
