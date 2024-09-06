@@ -1,6 +1,5 @@
 package kr.ac.kookmin.wink.planlist.friend.service;
 
-import jakarta.transaction.Transactional;
 import kr.ac.kookmin.wink.planlist.friend.domain.FriendStatus;
 import kr.ac.kookmin.wink.planlist.friend.domain.Friendship;
 import kr.ac.kookmin.wink.planlist.friend.dto.request.CreateFriendshipRequestDTO;
@@ -13,12 +12,15 @@ import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
@@ -33,10 +35,22 @@ public class FriendshipService {
         User standardUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_USER_ID));
 
-        return standardUser.getFriendshipsByStatus(FriendStatus.FRIEND)
+        return getUserFriendships(standardUser)
                 .stream()
                 .map((friendship) -> new UserFriendsResponseDTO(friendship, standardUser))
                 .toList();
+    }
+
+    private List<Friendship> getUserFriendships(User user) {
+        List<Friendship> allByFollower = friendshipRepository.findAllByFollower(user);
+        List<Friendship> allByFollowing = friendshipRepository.findAllByFollowing(user);
+
+        ArrayList<Friendship> friendships = new ArrayList<>();
+
+        friendships.addAll(allByFollower);
+        friendships.addAll(allByFollowing);
+
+        return friendships;
     }
 
     public List<WaitingFriendsResponseDTO> findAllWaitingFriendshipsByUser(Long userId, boolean isFollower) {
@@ -53,6 +67,7 @@ public class FriendshipService {
                 .toList();
     }
 
+    @Transactional
     public Friendship createFriendship(CreateFriendshipRequestDTO requestDTO, Long currentTime) {
         Long followerId = requestDTO.getFollowerId();
         Long followingId = requestDTO.getFollowingId();
@@ -78,6 +93,7 @@ public class FriendshipService {
         friendship.setStatus(FriendStatus.FRIEND);
     }
 
+    @Transactional
     public void delete(Long friendshipId) {
         friendshipRepository.deleteById(friendshipId);
     }

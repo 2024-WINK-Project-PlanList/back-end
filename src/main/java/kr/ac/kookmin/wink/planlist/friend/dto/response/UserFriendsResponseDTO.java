@@ -16,7 +16,6 @@ public class UserFriendsResponseDTO {
     private String profileImagePath;
 
     public UserFriendsResponseDTO(Friendship friendship, User standardUser) {
-
         this(friendship.getId(), friendship.getAnotherOne(standardUser));
     }
 
