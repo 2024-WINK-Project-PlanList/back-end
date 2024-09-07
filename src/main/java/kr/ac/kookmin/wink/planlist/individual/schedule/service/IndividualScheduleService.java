@@ -1,7 +1,9 @@
 package kr.ac.kookmin.wink.planlist.individual.schedule.service;
 
+import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.individual.calendar.domain.IndividualCalendar;
 import kr.ac.kookmin.wink.planlist.individual.calendar.repository.IndividualCalendarRepository;
+import kr.ac.kookmin.wink.planlist.individual.exeption.IndividualError;
 import kr.ac.kookmin.wink.planlist.individual.schedule.domain.IndividualSchedule;
 import kr.ac.kookmin.wink.planlist.individual.schedule.dto.IndividualScheduleRequestDTO;
 import kr.ac.kookmin.wink.planlist.individual.schedule.dto.IndividualScheduleResponseDTO;
@@ -24,11 +26,11 @@ public class IndividualScheduleService {
 
     public void createSchedule(IndividualScheduleRequestDTO individualScheduleRequestDTO) {
         IndividualCalendar individualCalendar = individualCalendarRepository.findById(individualScheduleRequestDTO.getCalendarId())
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid calendar id: " + individualScheduleRequestDTO.getCalendarId()));
+                        .orElseThrow(() -> new CustomException(IndividualError.INVALID_CALENDAR_ID));
         List<User> scheduleMemberList = new ArrayList<>();
         for(Long userId:individualScheduleRequestDTO.getScheduleMemberList()) {
             scheduleMemberList.add(userRepository.findById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + userId)));
+                    .orElseThrow(() -> new CustomException(IndividualError.INVALID_USER_ID)));
         }
         individualScheduleRepository.save(IndividualSchedule.builder()
                         .content(individualScheduleRequestDTO.getContent())
@@ -44,46 +46,39 @@ public class IndividualScheduleService {
     public IndividualScheduleResponseDTO findSchedule(Long scheduleId) {
 
         IndividualSchedule individualSchedule = individualScheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid schedule id: " + scheduleId));
+                .orElseThrow(() -> new CustomException(IndividualError.INVALID_SCHEDULE_ID));
 
         return IndividualScheduleResponseDTO.create(individualSchedule);
     }
 
     public void updateSchedule(Long scheduleId, IndividualScheduleRequestDTO individualScheduleRequestDTO) {
         IndividualSchedule individualSchedule = individualScheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid schedule id: " + scheduleId));
+                .orElseThrow(() -> new CustomException(IndividualError.INVALID_SCHEDULE_ID));
 
         List<User> userList = new ArrayList<>();
         for(Long userId:individualScheduleRequestDTO.getScheduleMemberList()) {
             userList.add(userRepository.findById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + userId)));
+                    .orElseThrow(() -> new CustomException(IndividualError.INVALID_USER_ID)));
         }
 
-//        individualSchedule.updateSchedule(individualScheduleRequestDTO, userList);
-//        individualSchedule.setContent(individualScheduleRequestDTO.getContent());
-//        individualSchedule.setStartDate(individualScheduleRequestDTO.getStartDate());
-//        individualSchedule.setEndDate(individualScheduleRequestDTO.getEndDate());
-//        individualSchedule.setOpenStatus(individualScheduleRequestDTO.getOpenStatus());
-//        individualSchedule.setColorId(individualScheduleRequestDTO.getColorId());
-//        individualSchedule.setScheduleMemberList(userList);
         individualScheduleRepository.save(individualSchedule.updateSchedule(individualScheduleRequestDTO, userList));
     }
 
     public void deleteSchedule(Long scheduleId) {
         IndividualSchedule individualSchedule = individualScheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid schedule id: " + scheduleId));
+                .orElseThrow(() -> new CustomException(IndividualError.INVALID_SCHEDULE_ID));
 
         individualScheduleRepository.delete(individualSchedule);
     }
 
     public List<IndividualScheduleResponseDTO> getSchedules(Long calendarId) {
         return getSchedules(individualCalendarRepository.findById(calendarId)
-        .orElseThrow(() -> new IllegalArgumentException("Invalid calendar id: " + calendarId)));
+        .orElseThrow(() -> new CustomException(IndividualError.INVALID_CALENDAR_ID)));
     }
 
     public List<IndividualScheduleResponseDTO> getSchedules(IndividualCalendar individualCalendar) {
         List<IndividualSchedule> individualSchedules = individualScheduleRepository.findByIndividualCalendar(individualCalendar)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid individual calendar: " + individualCalendar));
+                .orElseThrow(() -> new CustomException(IndividualError.INVALID_CALENDAR));
 
         List<IndividualScheduleResponseDTO> responseScheduleList = new ArrayList<>();
         for (IndividualSchedule individualSchedule : individualSchedules) {
