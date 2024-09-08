@@ -1,14 +1,12 @@
 package kr.ac.kookmin.wink.planlist.todolist.controller;
 
 import kr.ac.kookmin.wink.planlist.todolist.dto.TodolistDTO;
-import kr.ac.kookmin.wink.planlist.todolist.model.Todolist;
 import kr.ac.kookmin.wink.planlist.todolist.service.TodolistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/todolist")

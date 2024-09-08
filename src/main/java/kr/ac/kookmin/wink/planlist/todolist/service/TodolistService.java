@@ -49,12 +49,14 @@ public class TodolistService {
     }
 
 
-
-
     @Transactional
     public TodolistDTO updateTask(Long id, TodolistDTO updateTodolistDTO) {
-        return updateTodolistDTO;
+        // ID로 투두리스트를 찾고 없으면 예외를 던짐
+        Todolist existingTodolist = todolistRepository.findById(id)
+                .orElseThrow(() -> new CustomException(TodolistErrorCode.INVALID_TODOLIST));
+        return convertToDto(existingTodolist);
     }
+
 
 
     @Transactional

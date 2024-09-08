@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import kr.ac.kookmin.wink.planlist.friend.domain.FriendStatus;
 import kr.ac.kookmin.wink.planlist.friend.domain.Friendship;
 import kr.ac.kookmin.wink.planlist.individual.calendar.domain.IndividualCalendar;
+import kr.ac.kookmin.wink.planlist.todolist.model.Todolist;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -52,6 +53,10 @@ public class User {
   
     @OneToOne(mappedBy = "user")
     private IndividualCalendar individualCalendar;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Todolist> todolists = new ArrayList<>();
+
 
     public void updateUserProfile(String nickname, String songId, String comment) {
         this.nickname = nickname;

@@ -26,6 +26,10 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+#env file#
+application.properties
+
+
 ### Database ###
 *.accdb
 *.db
