@@ -1,25 +1,30 @@
 package kr.ac.kookmin.wink.planlist.todolist.service;
 
+import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.todolist.dto.TodolistDTO;
+import kr.ac.kookmin.wink.planlist.todolist.exception.TodolistErrorCode;
 import kr.ac.kookmin.wink.planlist.todolist.model.Todolist;
 import kr.ac.kookmin.wink.planlist.todolist.repository.TodolistRepository;
+import kr.ac.kookmin.wink.planlist.user.domain.User;
+import kr.ac.kookmin.wink.planlist.user.exception.UserErrorCode;
+import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TodolistService {
 
+    private final UserRepository userRepository;
     private final TodolistRepository todolistRepository;
-
-    @Autowired
-    public TodolistService(TodolistRepository todolistRepository) {
-        this.todolistRepository = todolistRepository;
-    }
 
     // 투두 리스트 생성
     public TodolistDTO createTask(TodolistDTO todolistDTO) {
@@ -38,39 +43,41 @@ public class TodolistService {
 
 
     // ID로 투두 리스트 가져오기
-    public Optional<TodolistDTO> getTaskById(int id) {
+    public TodolistDTO getTaskById(Long id) {
         Optional<Todolist> task = todolistRepository.findById(id);
-        return task.map(this::convertToDto);
+        return task.map(this::convertToDto).orElseThrow(() -> new CustomException(TodolistErrorCode.INVALID_TODOLIST));
     }
 
-    // 투두 리스트 업데이트
-    public Optional<TodolistDTO> updateTask(int id, TodolistDTO updatedTodolistDTO) {
-        return todolistRepository.findById(id).map(existingTask -> {
-            existingTask.setContent(updatedTodolistDTO.getContent());
-            existingTask.setCreatedAt(updatedTodolistDTO.getCreatedAt());
-            existingTask.setUserId(updatedTodolistDTO.getUserId());
-            Todolist updatedTask = todolistRepository.save(existingTask);
-            return convertToDto(updatedTask);
-        });
+
+
+
+    @Transactional
+    public TodolistDTO updateTask(Long id, TodolistDTO updateTodolistDTO) {
+        return updateTodolistDTO;
     }
 
-    // 투두 리스트 삭제
-    public boolean deleteTask(int id) {
-        return todolistRepository.findById(id).map(existingTask -> {
-            todolistRepository.delete(existingTask);
-            return true;
-        }).orElse(false);
-    }
 
+    @Transactional
+    public boolean deleteTask(Long id) {
+        if (todolistRepository.existsById(id)) {  // 먼저 해당 ID의 작업이 있는지 확인
+            todolistRepository.deleteById(id);   // 작업이 존재하면 삭제 수행
+            return true;                        // 삭제 성공 시 true 반환
+        }
+        return false;                           // 해당 ID의 작업이 없으면 false 반환
+    }
 
 
     private Todolist convertToEntity(TodolistDTO todolistDTO) {
-        return new Todolist(
-                todolistDTO.getContent(),
-                todolistDTO.getCreatedAt(),
-                todolistDTO.getUserId()
-        );
+        User user = userRepository.findById((long) todolistDTO.getUserId())
+                .orElseThrow(() -> new CustomException(TodolistErrorCode.INVALID_USER));
+
+        return Todolist.builder()
+                .content(todolistDTO.getContent())
+                .user(user)
+                
+                .build();
     }
+
 
     // 엔티티 -> DTO 변환
     private TodolistDTO convertToDto(Todolist todolist) {
@@ -78,7 +85,7 @@ public class TodolistService {
                 todolist.getTodoListId(),
                 todolist.getContent(),
                 todolist.getCreatedAt(),
-                todolist.getUserId()
+                todolist.getUser().getId()
         );
     }
 }
