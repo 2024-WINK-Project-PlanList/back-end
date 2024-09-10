@@ -2,6 +2,7 @@ package kr.ac.kookmin.wink.planlist.user.controller;
 
 import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import kr.ac.kookmin.wink.planlist.user.dto.request.ChangeProfileRequestDTO;
+import kr.ac.kookmin.wink.planlist.user.dto.request.SongRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
 import kr.ac.kookmin.wink.planlist.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +25,11 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getCurrentUser(@AuthenticationPrincipal SecurityUser securityUser) {
         return ResponseEntity.ok(userService.getCurrentUser(securityUser));
+    }
+
+    @PatchMapping("/me/song")
+    public ResponseEntity<?> updateSong(@RequestBody SongRequestDTO requestDTO, @AuthenticationPrincipal SecurityUser securityUser) {
+        userService.updateSong(requestDTO, securityUser.getUser());
+        return ResponseEntity.ok().build();
     }
 }

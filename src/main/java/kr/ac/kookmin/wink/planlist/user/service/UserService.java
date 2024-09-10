@@ -9,10 +9,7 @@ import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import kr.ac.kookmin.wink.planlist.user.domain.KakaoUserInfo;
 import kr.ac.kookmin.wink.planlist.user.domain.LoginType;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
-import kr.ac.kookmin.wink.planlist.user.dto.request.ChangeProfileRequestDTO;
-import kr.ac.kookmin.wink.planlist.user.dto.request.KakaoLoginRequestDTO;
-import kr.ac.kookmin.wink.planlist.user.dto.request.LoginRequestDTO;
-import kr.ac.kookmin.wink.planlist.user.dto.request.RegisterRequestDTO;
+import kr.ac.kookmin.wink.planlist.user.dto.request.*;
 import kr.ac.kookmin.wink.planlist.user.dto.response.KakaoLoginResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.RegisterResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
@@ -41,6 +38,11 @@ public class UserService {
     private final RestTemplate restTemplate;
     private final TokenProvider tokenProvider;
     private final S3Service s3Service;
+
+    @Transactional
+    public void updateSong(SongRequestDTO requestDTO, User user) {
+        user.setSongId(requestDTO.getSongId());
+    }
 
     @Transactional
     public void changeUserProfile(ChangeProfileRequestDTO requestDTO, User user) {
@@ -89,10 +91,8 @@ public class UserService {
             throw new CustomException(UserErrorCode.INVALID_ACCESS_TOKEN);
         }
 
-        Long userId = tokenProvider.getUserId(accessToken);
-
         User user = userRepository
-                .findById(userId)
+                .findById(tokenProvider.getUserId(accessToken))
                 .orElseThrow(() -> new CustomException(UserErrorCode.INVALID_ACCESS_TOKEN));
 
         return UserDTO.create(user);
