@@ -2,6 +2,7 @@ package kr.ac.kookmin.wink.planlist.friend.service;
 
 import kr.ac.kookmin.wink.planlist.friend.domain.FriendStatus;
 import kr.ac.kookmin.wink.planlist.friend.domain.Friendship;
+import kr.ac.kookmin.wink.planlist.friend.dto.request.AcceptFriendRequestDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.request.CreateFriendshipRequestDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.response.SearchUserResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.response.UserFriendsResponseDTO;
@@ -98,8 +99,8 @@ public class FriendshipService {
     }
 
     @Transactional
-    public void accept(Long friendshipId) {
-        Friendship friendship = findById(friendshipId);
+    public void accept(AcceptFriendRequestDTO requestDTO) {
+        Friendship friendship = findById(requestDTO.getFriendshipId());
 
         friendship.setStatus(FriendStatus.FRIEND);
     }
