@@ -4,7 +4,7 @@ import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.individual.calendar.domain.IndividualCalendar;
 import kr.ac.kookmin.wink.planlist.individual.calendar.dto.IndividualCalendarResponseDTO;
 import kr.ac.kookmin.wink.planlist.individual.calendar.repository.IndividualCalendarRepository;
-import kr.ac.kookmin.wink.planlist.individual.exeption.IndividualError;
+import kr.ac.kookmin.wink.planlist.individual.exeption.IndividualErrorCode;
 import kr.ac.kookmin.wink.planlist.individual.schedule.dto.IndividualScheduleResponseDTO;
 import kr.ac.kookmin.wink.planlist.individual.schedule.service.IndividualScheduleService;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
@@ -44,7 +44,7 @@ public class IndividualCalendarService {
      */
     public IndividualCalendarResponseDTO getIndividualCalendar(User user){
         IndividualCalendar individualCalendar = calenderRepository.findByUser(user)
-                .orElseThrow(() -> new CustomException(IndividualError.INVALID_CALENDAR_ID));
+                .orElseThrow(() -> new CustomException(IndividualErrorCode.INVALID_CALENDAR_ID));
 
         List<IndividualScheduleResponseDTO> individualSchedules = individualScheduleService.getSchedules(individualCalendar);
 
@@ -62,7 +62,7 @@ public class IndividualCalendarService {
      */
     public IndividualCalendarResponseDTO getIndividualCalenderByUserId(Long userId){
         IndividualCalendar individualCalendar = calenderRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(IndividualError.INVALID_USER_ID));
+                .orElseThrow(() -> new CustomException(IndividualErrorCode.INVALID_USER_ID));
 
         List<IndividualScheduleResponseDTO> individualSchedules = individualScheduleService.getSchedules(individualCalendar);
 
@@ -83,7 +83,7 @@ public class IndividualCalendarService {
         if (individualCalendarRepository.findById(calendarId).isEmpty()) {
             System.out.println("successfully deleted individual calendar");
         } else {
-            throw new CustomException(IndividualError.INVALID_CALENDAR_ID);
+            throw new CustomException(IndividualErrorCode.INVALID_CALENDAR_ID);
         }
     }
 
