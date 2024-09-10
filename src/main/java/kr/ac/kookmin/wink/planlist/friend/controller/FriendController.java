@@ -1,6 +1,7 @@
 package kr.ac.kookmin.wink.planlist.friend.controller;
 
 import kr.ac.kookmin.wink.planlist.friend.dto.request.CreateFriendshipRequestDTO;
+import kr.ac.kookmin.wink.planlist.friend.dto.response.SearchUserResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.response.UserFriendsResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.response.WaitingFriendsResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.service.FriendshipService;
@@ -40,7 +41,7 @@ public class FriendController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<UserFriendsResponseDTO>> getFriends(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok().body(friendshipService.findAllFriendsByUser(userId));
+        return ResponseEntity.ok().body(friendshipService.findAllFriendsByUserId(userId));
     }
 
     @GetMapping("/{userId}/requests")
@@ -52,4 +53,14 @@ public class FriendController {
     public ResponseEntity<List<WaitingFriendsResponseDTO>> getReceivedFriendships(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok().body(friendshipService.findAllWaitingFriendshipsByUser(userId, false));
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<SearchUserResponseDTO>> getUsersBySearch(@RequestParam(name = "keyword") String keyword, @RequestParam(name = "onlyFriends") boolean onlyFriends) {
+        return ResponseEntity.ok().body(friendshipService.findAllUsersBySearch(keyword, onlyFriends));
+    }
+
+//    @GetMapping("/test/{userId}")
+//    public List<User> test(@PathVariable("userId") Long userId) {
+//        return friendshipService.test(userId);
+//    }
 }

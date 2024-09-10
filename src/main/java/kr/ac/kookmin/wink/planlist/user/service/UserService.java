@@ -2,6 +2,7 @@ package kr.ac.kookmin.wink.planlist.user.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import kr.ac.kookmin.wink.planlist.friend.service.FriendshipService;
 import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.global.jwt.TokenProvider;
 import kr.ac.kookmin.wink.planlist.global.s3.S3Service;
@@ -13,6 +14,7 @@ import kr.ac.kookmin.wink.planlist.user.dto.request.*;
 import kr.ac.kookmin.wink.planlist.user.dto.response.KakaoLoginResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.RegisterResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
+import kr.ac.kookmin.wink.planlist.user.dto.response.UserInfoResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.exception.UserErrorCode;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,7 @@ public class UserService {
     private final RestTemplate restTemplate;
     private final TokenProvider tokenProvider;
     private final S3Service s3Service;
+    private final FriendshipService friendshipService;
 
     @Transactional
     public void updateSong(SongRequestDTO requestDTO, User user) {
@@ -57,8 +60,16 @@ public class UserService {
         user.setProfileImagePath(imagePath);
     }
 
-    public UserDTO getCurrentUser(SecurityUser securityUser) {
-        return UserDTO.create(securityUser.getUser());
+    public UserInfoResponseDTO getCurrentUserInfo(SecurityUser securityUser) {
+        User user = securityUser.getUser();
+        UserDTO userDTO = UserDTO.create(user);
+        int count = friendshipService.findAllFriendsByUser(user).size();
+
+        return UserInfoResponseDTO
+                .builder()
+                .user(userDTO)
+                .totalFriendCount(count)
+                .build();
     }
 
     @Transactional

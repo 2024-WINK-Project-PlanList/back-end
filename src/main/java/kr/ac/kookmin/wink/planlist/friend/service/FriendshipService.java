@@ -3,6 +3,7 @@ package kr.ac.kookmin.wink.planlist.friend.service;
 import kr.ac.kookmin.wink.planlist.friend.domain.FriendStatus;
 import kr.ac.kookmin.wink.planlist.friend.domain.Friendship;
 import kr.ac.kookmin.wink.planlist.friend.dto.request.CreateFriendshipRequestDTO;
+import kr.ac.kookmin.wink.planlist.friend.dto.response.SearchUserResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.response.UserFriendsResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.response.WaitingFriendsResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.exception.FriendErrorCode;
@@ -31,9 +32,14 @@ public class FriendshipService {
                 .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_FRIENDSHIP_ID));
     }
 
-    public List<UserFriendsResponseDTO> findAllFriendsByUser(Long userId) {
+    public List<UserFriendsResponseDTO> findAllFriendsByUserId(Long userId) {
         User standardUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_USER_ID));
+
+        return findAllFriendsByUser(standardUser);
+    }
+
+    public List<UserFriendsResponseDTO> findAllFriendsByUser(User standardUser) {
 
         return getUserFriendships(standardUser)
                 .stream()
@@ -65,6 +71,11 @@ public class FriendshipService {
                 .stream()
                 .map((friendship) -> new WaitingFriendsResponseDTO(friendship, isFollower))
                 .toList();
+    }
+
+    //TODO: 친구 이름 검색 구현
+    public List<SearchUserResponseDTO> findAllUsersBySearch(String keyword, boolean onlyFriends) {
+        return null;
     }
 
     @Transactional

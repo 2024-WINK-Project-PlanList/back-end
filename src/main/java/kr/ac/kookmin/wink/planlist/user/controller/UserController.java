@@ -3,7 +3,7 @@ package kr.ac.kookmin.wink.planlist.user.controller;
 import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import kr.ac.kookmin.wink.planlist.user.dto.request.ChangeProfileRequestDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.request.SongRequestDTO;
-import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
+import kr.ac.kookmin.wink.planlist.user.dto.response.UserInfoResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +23,8 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserDTO> getCurrentUser(@AuthenticationPrincipal SecurityUser securityUser) {
-        return ResponseEntity.ok(userService.getCurrentUser(securityUser));
+    public ResponseEntity<UserInfoResponseDTO> getCurrentUser(@AuthenticationPrincipal SecurityUser securityUser) {
+        return ResponseEntity.ok(userService.getCurrentUserInfo(securityUser));
     }
 
     @PatchMapping("/me/song")
