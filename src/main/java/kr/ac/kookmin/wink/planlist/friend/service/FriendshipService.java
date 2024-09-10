@@ -33,13 +33,6 @@ public class FriendshipService {
                 .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_FRIENDSHIP_ID));
     }
 
-    public List<UserFriendsResponseDTO> findAllFriendsByUserId(Long userId) {
-        User standardUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_USER_ID));
-
-        return findAllFriendsByUser(standardUser);
-    }
-
     public List<UserFriendsResponseDTO> findAllFriendsByUser(User standardUser) {
 
         return getUserFriendships(standardUser)

@@ -7,6 +7,7 @@ import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.global.jwt.TokenProvider;
 import kr.ac.kookmin.wink.planlist.global.s3.S3Service;
 import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
+import kr.ac.kookmin.wink.planlist.individual.calendar.service.IndividualCalendarService;
 import kr.ac.kookmin.wink.planlist.user.domain.KakaoUserInfo;
 import kr.ac.kookmin.wink.planlist.user.domain.LoginType;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
@@ -41,6 +42,7 @@ public class UserService {
     private final TokenProvider tokenProvider;
     private final S3Service s3Service;
     private final FriendshipService friendshipService;
+    private final IndividualCalendarService calendarService;
 
     @Transactional
     public void updateSong(SongRequestDTO requestDTO, User user) {
@@ -86,6 +88,8 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+
+        calendarService.create(user);
 
         String accessToken = tokenProvider.generateToken(user, Duration.ofDays(7));
 
