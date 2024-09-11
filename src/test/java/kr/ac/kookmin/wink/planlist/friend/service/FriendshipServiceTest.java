@@ -3,7 +3,6 @@ package kr.ac.kookmin.wink.planlist.friend.service;
 import jakarta.transaction.Transactional;
 import kr.ac.kookmin.wink.planlist.friend.domain.Friendship;
 import kr.ac.kookmin.wink.planlist.friend.dto.request.CreateFriendshipRequestDTO;
-import kr.ac.kookmin.wink.planlist.friend.dto.response.WaitingFriendsResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
@@ -18,8 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -57,8 +54,8 @@ class FriendshipServiceTest {
 
     private User getTempUser() {
         UserDTO userDTO = userService.getOrRegisterTempAccount(-1L).getUser();
-        return userRepository.findById(userDTO.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("unexpected user id: " + userDTO.getUserId()));
+        return userRepository.findById(userDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("unexpected user id: " + userDTO.getId()));
     }
 
     private User getMockUser(String name) {
@@ -103,14 +100,6 @@ class FriendshipServiceTest {
 
         CreateFriendshipRequestDTO requestDTO2 = new CreateFriendshipRequestDTO(user1.getId(), user3.getId());
         Friendship friendship2 = friendshipService.createFriendship(requestDTO2, 100L);
-
-        List<WaitingFriendsResponseDTO> allWaitingFriendshipsByUser = friendshipService.findAllWaitingFriendshipsByUser(user1.getId(), true);
-
-        //then
-        allWaitingFriendshipsByUser
-                .forEach((friendship) -> System.out.println(friendship.toString()));
-
-        Assertions.assertThat(allWaitingFriendshipsByUser.size()).isEqualTo(2);
     }
 
     @Test

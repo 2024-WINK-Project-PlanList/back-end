@@ -47,8 +47,11 @@ public class FriendController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<SearchUserResponseDTO>> getUsersBySearch(@RequestParam(name = "keyword") String keyword, @RequestParam(name = "onlyFriends") boolean onlyFriends) {
-        return ResponseEntity.ok().body(friendshipService.findAllUsersBySearch(keyword, onlyFriends));
+    public ResponseEntity<List<SearchUserResponseDTO>> getUsersBySearch(
+            @AuthenticationPrincipal SecurityUser securityUser,
+            @RequestParam(name = "keyword") String keyword,
+            @RequestParam(name = "onlyFriends") boolean onlyFriends) {
+        return ResponseEntity.ok().body(friendshipService.findAllUsersBySearch(securityUser.getUser(), keyword, onlyFriends));
     }
 
 

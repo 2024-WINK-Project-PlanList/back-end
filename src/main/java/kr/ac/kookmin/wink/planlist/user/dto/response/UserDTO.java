@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class UserDTO {
-    private Long userId;
+    private Long id;
     private String name;
     private String nickname;
     private String email;
@@ -18,7 +18,7 @@ public class UserDTO {
 
     public static UserDTO create(User user) {
         return UserDTO.builder()
-                .userId(user.getId())
+                .id(user.getId())
                 .name(user.getName())
                 .nickname(user.getNickname())
                 .email(user.getEmail())

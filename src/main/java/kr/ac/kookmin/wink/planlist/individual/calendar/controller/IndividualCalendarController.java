@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/calendar/individual")
+@RequestMapping("/calendar")
 public class IndividualCalendarController {
 
     private final IndividualCalendarService individualCalendarService;
@@ -44,5 +44,4 @@ public class IndividualCalendarController {
         individualCalendarService.delete(calendarId);
         return ResponseEntity.ok().build();
     }
-
 }

@@ -6,12 +6,13 @@ import kr.ac.kookmin.wink.planlist.friend.dto.request.AcceptFriendRequestDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.request.CreateFriendshipRequestDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.response.SearchUserResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.response.UserFriendsResponseDTO;
-import kr.ac.kookmin.wink.planlist.friend.dto.response.WaitingFriendsResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.exception.FriendErrorCode;
 import kr.ac.kookmin.wink.planlist.friend.repository.FriendshipRepository;
 import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
+import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
+import kr.ac.kookmin.wink.planlist.user.repository.UserSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,23 +54,40 @@ public class FriendshipService {
         return friendships;
     }
 
-    public List<WaitingFriendsResponseDTO> findAllWaitingFriendshipsByUser(Long userId, boolean isFollower) {
+    public List<Friendship> findAllWaitingFriendshipsByUser(Long userId, boolean isFollower) {
         User standardUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_USER_ID));
 
-        List<Friendship> friendships = (isFollower) ?
+        return (isFollower) ?
                 friendshipRepository.findAllByFollower(standardUser) :
                 friendshipRepository.findAllByFollowing(standardUser);
-
-        return friendships
-                .stream()
-                .map((friendship) -> new WaitingFriendsResponseDTO(friendship, isFollower))
-                .toList();
     }
 
-    //TODO: 친구 이름 검색 구현
-    public List<SearchUserResponseDTO> findAllUsersBySearch(String keyword, boolean onlyFriends) {
-        return null;
+    //TODO: 친구 이메일 검색 구현
+    public List<SearchUserResponseDTO> findAllUsersBySearch(User user, String keyword, boolean onlyFriends) {
+        List<UserDTO> allFriendsByUser = findAllFriendsByUser(user)
+                .stream()
+                .map(UserFriendsResponseDTO::getFriend)
+                .toList();
+
+        if (onlyFriends) {
+            return allFriendsByUser
+                    .stream()
+                    .filter((friendDTO) -> friendDTO.getEmail().contains(keyword))
+                    .map((filtered) -> new SearchUserResponseDTO(filtered, true))
+                    .toList();
+        } else {
+            List<UserDTO> searchResults = userRepository
+                    .findAll(UserSpecifications.searchByEmail(keyword.trim()))
+                    .stream()
+                    .map(UserDTO::create)
+                    .toList();
+
+            return searchResults
+                    .stream()
+                    .map((result) -> new SearchUserResponseDTO(result, allFriendsByUser.contains(result)))
+                    .toList();
+        }
     }
 
     @Transactional

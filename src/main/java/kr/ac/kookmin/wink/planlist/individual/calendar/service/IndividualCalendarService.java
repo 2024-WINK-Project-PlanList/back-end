@@ -68,7 +68,7 @@ public class IndividualCalendarService {
 
         return IndividualCalendarResponseDTO.builder()
                 .calendarId(individualCalendar.getId())
-                .userId(individualCalendar.getUser().getId())
+                .user(UserDTO.create(individualCalendar.getUser()))
                 .individualScheduleList(individualSchedules)
                 .build();
     }

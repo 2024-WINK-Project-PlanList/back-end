@@ -28,19 +28,22 @@ public class IndividualScheduleService {
         IndividualCalendar individualCalendar = individualCalendarRepository.findById(individualScheduleRequestDTO.getCalendarId())
                         .orElseThrow(() -> new CustomException(IndividualErrorCode.INVALID_CALENDAR_ID));
         List<User> scheduleMemberList = new ArrayList<>();
-        for(Long userId:individualScheduleRequestDTO.getScheduleMemberList()) {
+        for(Long userId:individualScheduleRequestDTO.getScheduleMembers()) {
             scheduleMemberList.add(userRepository.findById(userId)
                     .orElseThrow(() -> new CustomException(IndividualErrorCode.INVALID_USER_ID)));
         }
-        individualScheduleRepository.save(IndividualSchedule.builder()
-                        .content(individualScheduleRequestDTO.getContent())
-                        .startDate(individualScheduleRequestDTO.getStartDate())
-                        .endDate(individualScheduleRequestDTO.getEndDate())
-                        .openStatus(individualScheduleRequestDTO.getOpenStatus())
-                        .colorId(individualScheduleRequestDTO.getColorId())
-                        .scheduleMemberList(scheduleMemberList)
-                        .individualCalendar(individualCalendar)
-                        .build());
+
+        IndividualSchedule schedule = IndividualSchedule.builder()
+                .content(individualScheduleRequestDTO.getContent())
+                .startDate(individualScheduleRequestDTO.getStartDate())
+                .endDate(individualScheduleRequestDTO.getEndDate())
+                .openStatus(individualScheduleRequestDTO.getOpenStatus())
+                .colorId(individualScheduleRequestDTO.getColorId())
+                .scheduleMemberList(scheduleMemberList)
+                .individualCalendar(individualCalendar)
+                .build();
+
+        individualScheduleRepository.save(schedule);
     }
 
     public IndividualScheduleResponseDTO findSchedule(Long scheduleId) {
@@ -56,7 +59,7 @@ public class IndividualScheduleService {
                 .orElseThrow(() -> new CustomException(IndividualErrorCode.INVALID_SCHEDULE_ID));
 
         List<User> userList = new ArrayList<>();
-        for(Long userId:individualScheduleRequestDTO.getScheduleMemberList()) {
+        for(Long userId:individualScheduleRequestDTO.getScheduleMembers()) {
             userList.add(userRepository.findById(userId)
                     .orElseThrow(() -> new CustomException(IndividualErrorCode.INVALID_USER_ID)));
         }
