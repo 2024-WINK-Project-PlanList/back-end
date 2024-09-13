@@ -1,6 +1,6 @@
 package kr.ac.kookmin.wink.planlist.shared.calendar;
 
-import kr.ac.kookmin.wink.planlist.shared.calendar.repository.MemberSharedCalendarRepository;
+import kr.ac.kookmin.wink.planlist.shared.calendar.repository.UserSharedCalendarRepository;
 import kr.ac.kookmin.wink.planlist.shared.calendar.repository.SharedCalendarRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,6 +10,6 @@ import org.springframework.stereotype.Service;
 public class SharedCalendarService {
 
     private final SharedCalendarRepository sharedCalendarRepository;
-    private final MemberSharedCalendarRepository memberSharedCalendarRepository;
+    private final UserSharedCalendarRepository userSharedCalendarRepository;
 
 }

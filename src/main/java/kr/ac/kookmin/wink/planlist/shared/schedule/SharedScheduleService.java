@@ -1,6 +1,6 @@
 package kr.ac.kookmin.wink.planlist.shared.schedule;
 
-import kr.ac.kookmin.wink.planlist.shared.schedule.repository.MemberSharedScheduleRepository;
+import kr.ac.kookmin.wink.planlist.shared.schedule.repository.UserSharedScheduleRepository;
 import kr.ac.kookmin.wink.planlist.shared.schedule.repository.SharedScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class SharedScheduleService {
 
     private final SharedScheduleRepository sharedScheduleRepository;
-    private final MemberSharedScheduleRepository memberSharedScheduleRepository;
+    private final UserSharedScheduleRepository userSharedScheduleRepository;
 
-    
+
 }
