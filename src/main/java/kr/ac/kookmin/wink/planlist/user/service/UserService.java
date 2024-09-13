@@ -2,20 +2,20 @@ package kr.ac.kookmin.wink.planlist.user.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import kr.ac.kookmin.wink.planlist.friend.service.FriendshipService;
 import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.global.jwt.TokenProvider;
 import kr.ac.kookmin.wink.planlist.global.s3.S3Service;
 import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
+import kr.ac.kookmin.wink.planlist.individual.calendar.service.IndividualCalendarService;
 import kr.ac.kookmin.wink.planlist.user.domain.KakaoUserInfo;
 import kr.ac.kookmin.wink.planlist.user.domain.LoginType;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
-import kr.ac.kookmin.wink.planlist.user.dto.request.ChangeProfileRequestDTO;
-import kr.ac.kookmin.wink.planlist.user.dto.request.KakaoLoginRequestDTO;
-import kr.ac.kookmin.wink.planlist.user.dto.request.LoginRequestDTO;
-import kr.ac.kookmin.wink.planlist.user.dto.request.RegisterRequestDTO;
+import kr.ac.kookmin.wink.planlist.user.dto.request.*;
 import kr.ac.kookmin.wink.planlist.user.dto.response.KakaoLoginResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.RegisterResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
+import kr.ac.kookmin.wink.planlist.user.dto.response.UserInfoResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.exception.UserErrorCode;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +41,13 @@ public class UserService {
     private final RestTemplate restTemplate;
     private final TokenProvider tokenProvider;
     private final S3Service s3Service;
+    private final FriendshipService friendshipService;
+    private final IndividualCalendarService calendarService;
+
+    @Transactional
+    public void updateSong(SongRequestDTO requestDTO, User user) {
+        user.setSongId(requestDTO.getSongId());
+    }
 
     @Transactional
     public void changeUserProfile(ChangeProfileRequestDTO requestDTO, User user) {
@@ -55,8 +62,16 @@ public class UserService {
         user.setProfileImagePath(imagePath);
     }
 
-    public UserDTO getCurrentUser(SecurityUser securityUser) {
-        return UserDTO.create(securityUser.getUser());
+    public UserInfoResponseDTO getCurrentUserInfo(SecurityUser securityUser) {
+        User user = securityUser.getUser();
+        UserDTO userDTO = UserDTO.create(user);
+        int count = friendshipService.findAllFriendsByUser(user).size();
+
+        return UserInfoResponseDTO
+                .builder()
+                .user(userDTO)
+                .totalFriendCount(count)
+                .build();
     }
 
     @Transactional
@@ -74,6 +89,8 @@ public class UserService {
 
         userRepository.save(user);
 
+        calendarService.create(user);
+
         String accessToken = tokenProvider.generateToken(user, Duration.ofDays(7));
 
         return RegisterResponseDTO.builder()
@@ -89,10 +106,8 @@ public class UserService {
             throw new CustomException(UserErrorCode.INVALID_ACCESS_TOKEN);
         }
 
-        Long userId = tokenProvider.getUserId(accessToken);
-
         User user = userRepository
-                .findById(userId)
+                .findById(tokenProvider.getUserId(accessToken))
                 .orElseThrow(() -> new CustomException(UserErrorCode.INVALID_ACCESS_TOKEN));
 
         return UserDTO.create(user);

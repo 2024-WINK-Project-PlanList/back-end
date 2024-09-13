@@ -56,7 +56,7 @@ class IndividualCalendarControllerTest {
         UserDTO userDTO = userService.getOrRegisterTempAccount(1L).getUser();
 
         User user = User.builder()
-                .id(userDTO.getUserId())
+                .id(userDTO.getId())
                 .name("test")
                 .build();
 
@@ -82,7 +82,7 @@ class IndividualCalendarControllerTest {
         UserDTO userDTO = userService.getOrRegisterTempAccount(1L).getUser();
 
         User user = User.builder()
-                .id(userDTO.getUserId())
+                .id(userDTO.getId())
                 .name("test")
                 .build();
 
@@ -107,7 +107,7 @@ class IndividualCalendarControllerTest {
         UserDTO userDTO = userService.getOrRegisterTempAccount(1L).getUser();
 
         User user = User.builder()
-                .id(userDTO.getUserId())
+                .id(userDTO.getId())
                 .name("test")
                 .build();
 

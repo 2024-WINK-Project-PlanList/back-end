@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum IndividualError implements ErrorCode {
+public enum IndividualErrorCode implements ErrorCode {
     //userid , calendarid , 캘린더 삭제 실패, scheduleid
     INVALID_USER_ID("유효하지 않은 유저 아이디", HttpStatus.BAD_REQUEST),
     INVALID_CALENDAR_ID("유효하지 않은 캘린더 아이디", HttpStatus.BAD_REQUEST),
