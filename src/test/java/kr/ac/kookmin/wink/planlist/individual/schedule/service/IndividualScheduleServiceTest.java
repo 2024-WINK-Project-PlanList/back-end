@@ -45,22 +45,22 @@ class IndividualScheduleServiceTest {
     @BeforeEach
     void setUp() {
         userService.getOrRegisterTempAccount(10);
-        registerMockUser("황수민", "test2@gmail.com");
-        registerMockUser("장민우", "test3@gmail.com");
+        User user = registerMockUser("황수민", "test2@gmail.com");
+        User user1 = registerMockUser("장민우", "test3@gmail.com");
 
-        individualCalendarService.create(1L);
+        individualCalendarService.create(user);
 
         addTestSchedule(111111, individualCalendarRepository.findById(1L).get());
         addTestSchedule(222222, individualCalendarRepository.findById(1L).get());
     }
-    private void registerMockUser(String name, String email) {
+    private User registerMockUser(String name, String email) {
         User mockUser = User.builder()
                 .name(name)
                 .email(email)
                 .nickname(name)
                 .build();
 
-        userRepository.save(mockUser);
+        return userRepository.save(mockUser);
     }
     private IndividualSchedule addTestSchedule(int k, IndividualCalendar individualCalendar) {
         IndividualSchedule individualSchedule = IndividualSchedule.builder()

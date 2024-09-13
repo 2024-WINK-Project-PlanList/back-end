@@ -2,6 +2,7 @@ package kr.ac.kookmin.wink.planlist.friend.dto.response;
 
 import kr.ac.kookmin.wink.planlist.friend.domain.Friendship;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
+import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,23 +10,14 @@ import lombok.Setter;
 @Setter
 public class UserFriendsResponseDTO {
     private Long friendshipId;
-    private Long friendId;
-    private String email;
-    private String nickname;
-    private String songId;
-    private String profileImagePath;
+    private UserDTO friend;
 
     public UserFriendsResponseDTO(Friendship friendship, User standardUser) {
-
         this(friendship.getId(), friendship.getAnotherOne(standardUser));
     }
 
-    protected UserFriendsResponseDTO(Long friendshipId, User friend) {
+    protected UserFriendsResponseDTO(Long friendshipId, User friendUser) {
         this.friendshipId = friendshipId;
-        this.friendId = friend.getId();
-        this.nickname = friend.getNickname();
-        this.songId = friend.getSongId();
-        this.email = friend.getEmail();
-        this.profileImagePath = friend.getProfileImagePath();
+        this.friend = UserDTO.create(friendUser);
     }
 }

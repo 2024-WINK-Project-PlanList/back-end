@@ -7,6 +7,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class LoginRequestDTO {
-    private String accessToken;
+public class SongRequestDTO {
+    private String songId;
 }

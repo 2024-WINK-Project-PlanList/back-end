@@ -1,22 +1,29 @@
 package kr.ac.kookmin.wink.planlist.friend.service;
 
-import jakarta.transaction.Transactional;
 import kr.ac.kookmin.wink.planlist.friend.domain.FriendStatus;
 import kr.ac.kookmin.wink.planlist.friend.domain.Friendship;
+import kr.ac.kookmin.wink.planlist.friend.dto.request.AcceptFriendRequestDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.request.CreateFriendshipRequestDTO;
+import kr.ac.kookmin.wink.planlist.friend.dto.response.SearchUserResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.response.UserFriendsResponseDTO;
-import kr.ac.kookmin.wink.planlist.friend.dto.response.WaitingFriendsResponseDTO;
+import kr.ac.kookmin.wink.planlist.friend.exception.FriendErrorCode;
 import kr.ac.kookmin.wink.planlist.friend.repository.FriendshipRepository;
+import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
+import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
+import kr.ac.kookmin.wink.planlist.user.repository.UserSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
@@ -24,40 +31,73 @@ public class FriendshipService {
 
     public Friendship findById(Long friendshipId) {
         return friendshipRepository.findById(friendshipId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구관계 ID입니다."));
+                .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_FRIENDSHIP_ID));
     }
 
-    public List<UserFriendsResponseDTO> findAllFriendsByUser(Long userId) {
-        User standardUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 ID입니다."));
+    public List<UserFriendsResponseDTO> findAllFriendsByUser(User standardUser) {
 
-        return standardUser.getFriendshipsByStatus(FriendStatus.FRIEND)
+        return getUserFriendships(standardUser)
                 .stream()
                 .map((friendship) -> new UserFriendsResponseDTO(friendship, standardUser))
                 .toList();
     }
 
-    public List<WaitingFriendsResponseDTO> findAllWaitingFriendshipsByUser(Long userId, boolean isFollower) {
-        User standardUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 ID입니다."));
+    private List<Friendship> getUserFriendships(User user) {
+        List<Friendship> allByFollower = friendshipRepository.findAllByFollower(user);
+        List<Friendship> allByFollowing = friendshipRepository.findAllByFollowing(user);
 
-        List<Friendship> friendships = (isFollower) ?
-                friendshipRepository.findAllByFollower(standardUser) :
-                friendshipRepository.findAllByFollowing(standardUser);
+        ArrayList<Friendship> friendships = new ArrayList<>();
 
-        return friendships
-                .stream()
-                .map((friendship) -> new WaitingFriendsResponseDTO(friendship, isFollower))
-                .toList();
+        friendships.addAll(allByFollower);
+        friendships.addAll(allByFollowing);
+
+        return friendships;
     }
 
+    public List<Friendship> findAllWaitingFriendshipsByUser(Long userId, boolean isFollower) {
+        User standardUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_USER_ID));
+
+        return (isFollower) ?
+                friendshipRepository.findAllByFollower(standardUser) :
+                friendshipRepository.findAllByFollowing(standardUser);
+    }
+
+    //TODO: 친구 이메일 검색 구현
+    public List<SearchUserResponseDTO> findAllUsersBySearch(User user, String keyword, boolean onlyFriends) {
+        List<UserDTO> allFriendsByUser = findAllFriendsByUser(user)
+                .stream()
+                .map(UserFriendsResponseDTO::getFriend)
+                .toList();
+
+        if (onlyFriends) {
+            return allFriendsByUser
+                    .stream()
+                    .filter((friendDTO) -> friendDTO.getEmail().contains(keyword))
+                    .map((filtered) -> new SearchUserResponseDTO(filtered, true))
+                    .toList();
+        } else {
+            List<UserDTO> searchResults = userRepository
+                    .findAll(UserSpecifications.searchByEmail(keyword.trim()))
+                    .stream()
+                    .map(UserDTO::create)
+                    .toList();
+
+            return searchResults
+                    .stream()
+                    .map((result) -> new SearchUserResponseDTO(result, allFriendsByUser.contains(result)))
+                    .toList();
+        }
+    }
+
+    @Transactional
     public Friendship createFriendship(CreateFriendshipRequestDTO requestDTO, Long currentTime) {
         Long followerId = requestDTO.getFollowerId();
         Long followingId = requestDTO.getFollowingId();
         User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new IllegalArgumentException("팔로워 ID로 가져온 유저가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_USER_ID));
         User following = userRepository.findById(followingId)
-                .orElseThrow(() -> new IllegalArgumentException("팔로잉 ID로 가져온 유저가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_USER_ID));
 
         Friendship friendship = Friendship.builder()
                 .follower(follower)
@@ -70,13 +110,18 @@ public class FriendshipService {
     }
 
     @Transactional
-    public void accept(Long friendshipId) {
-        Friendship friendship = findById(friendshipId);
+    public void accept(AcceptFriendRequestDTO requestDTO) {
+        Friendship friendship = findById(requestDTO.getFriendshipId());
 
         friendship.setStatus(FriendStatus.FRIEND);
     }
 
+    @Transactional
     public void delete(Long friendshipId) {
         friendshipRepository.deleteById(friendshipId);
     }
+
+//    public List<User> test(Long userId) {
+//        return userRepository.findAllByUserId(userId);
+//    }
 }
