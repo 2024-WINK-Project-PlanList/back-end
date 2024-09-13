@@ -42,8 +42,6 @@ public class User {
     @OneToOne(mappedBy = "user")
     private IndividualCalendar individualCalendar;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Todolist> todolists = new ArrayList<>();
 
 
     public void updateUserProfile(String nickname, String songId, String comment) {

@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @AllArgsConstructor
@@ -13,17 +16,18 @@ import lombok.*;
 @Table(name = "todo_list")
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class Todolist {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "todo_list_id")
-    private Long todoListId;
+    @Column(name = "id")
+    private Long id;
 
-    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "content", nullable = false)
     private String content;
 
-    // DB에 있는디..?
+    @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -31,8 +35,12 @@ public class Todolist {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public void updateContent(String content) {
-        this.content = content;
+    @ColumnDefault("false")
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private boolean checked;
 
+    public void update(String content, boolean checked) {
+        this.content = content;
+        this.checked = checked;
     }
 }

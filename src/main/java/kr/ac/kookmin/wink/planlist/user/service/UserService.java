@@ -112,7 +112,8 @@ public class UserService {
 
         return UserDTO.create(user);
     }
-
+    
+    @Transactional
     public RegisterResponseDTO getOrRegisterTempAccount(long currentTime) {
         String nickname = "테스트";
         User tempUser = userRepository.findByNickname(nickname).orElse(null);

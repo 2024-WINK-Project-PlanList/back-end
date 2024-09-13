@@ -1,9 +1,14 @@
 package kr.ac.kookmin.wink.planlist.todolist.controller;
 
+import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
+import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import kr.ac.kookmin.wink.planlist.todolist.dto.TodolistDTO;
+import kr.ac.kookmin.wink.planlist.todolist.dto.request.CreateTodolistRequestDTO;
+import kr.ac.kookmin.wink.planlist.todolist.dto.request.UpdateTodolistRequestDTO;
 import kr.ac.kookmin.wink.planlist.todolist.service.TodolistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,37 +26,44 @@ public class TodolistController {
 
     // 할 일 생성
     @PostMapping("/tasks")
-    public ResponseEntity<TodolistDTO> createTask(@RequestBody TodolistDTO todolistDTO) {
-        TodolistDTO createdTask = todolistService.createTask(todolistDTO);
-        return ResponseEntity.ok(createdTask);
+    public ResponseEntity<?> createTask(
+            @AuthenticationPrincipal SecurityUser securityUser,
+            @RequestBody CreateTodolistRequestDTO requestDTO
+    ) {
+        todolistService.createTask(securityUser.getUser(), requestDTO);
+        return ResponseEntity.ok().build();
     }
 
     // 할 일 조회
     @GetMapping("/tasks")
-
-    public ResponseEntity<List<TodolistDTO>> getAllTasks() {
-        List<TodolistDTO> tasks = todolistService.getAllTasks();
-        return ResponseEntity.ok(tasks);
+    public ResponseEntity<List<TodolistDTO>> getAllTasks(@AuthenticationPrincipal SecurityUser securityUser) {
+        return ResponseEntity.ok(todolistService.getTasksByUser(securityUser.getUser()));
     }
 
     // ID로 할 일 조회
     @GetMapping("/tasks/{id}")
     public ResponseEntity<TodolistDTO> getTaskById(@PathVariable Long id) {
-        TodolistDTO task = todolistService.getTaskById(id);
-        return ResponseEntity.ok(task);
+        return ResponseEntity.ok(todolistService.getTaskById(id));
     }
 
     // ID로 할 일 업데이트
-    @PutMapping("/tasks/{id}")
-    public ResponseEntity<TodolistDTO> updateTask(@PathVariable Long id, @RequestBody TodolistDTO updatedTodolistDTO) {
-        TodolistDTO update = todolistService.updateTask(id, updatedTodolistDTO);
-        return ResponseEntity.ok(update);
+    @PatchMapping("/tasks")
+    public ResponseEntity<?> updateTask(@RequestBody UpdateTodolistRequestDTO requestDTO) {
+        todolistService.updateTask(requestDTO);
+        return ResponseEntity.ok().build();
     }
 
     // ID로 할 일 삭제
     @DeleteMapping("/tasks/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        boolean deleted = todolistService.deleteTask(id);
-        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
-    }
+        try {
+            todolistService.deleteTask((id));
+            return ResponseEntity.noContent().build();
+        }
+        catch (CustomException e) {
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).build();
+
+        }
+
+        }
 }

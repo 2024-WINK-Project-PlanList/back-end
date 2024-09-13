@@ -1,26 +1,30 @@
 package kr.ac.kookmin.wink.planlist.todolist.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import kr.ac.kookmin.wink.planlist.todolist.model.Todolist;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Builder
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class TodolistDTO {
-
-    private Long todoListId;       // 투두 리스트 ID
+    private Long id;       // 투두 리스트 ID
     private String content;       // 투두 리스트 내용
     private LocalDateTime createdAt; // 생성일
-    private Long userId;           // 사용자 ID
+    private Long userId; //사용자 ID
+    private boolean checked;
 
-    // 모든 필드를 사용하는 생성자
-    public TodolistDTO(Long todoListId, String content, LocalDateTime createdAt, Long userId) {
-        this.todoListId = todoListId;
-        this.content = content;
-        this.createdAt = createdAt;
-        this.userId = userId;
+    public static TodolistDTO create(Todolist todolist) {
+        return TodolistDTO
+                .builder()
+                .id(todolist.getId())
+                .content(todolist.getContent())
+                .createdAt(todolist.getCreatedAt())
+                .userId(todolist.getUser().getId())
+                .checked(todolist.isChecked())
+                .build();
     }
 }

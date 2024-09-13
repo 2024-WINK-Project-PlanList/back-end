@@ -27,7 +27,7 @@ out/
 !**/src/test/**/out/
 
 #env file#
-application.properties
+application-local.yml
 
 
 ### Database ###
