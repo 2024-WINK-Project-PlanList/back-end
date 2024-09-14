@@ -30,14 +30,6 @@ public class UserSharedSchedule implements Persistable<UserSharedScheduleId> {
     @ManyToOne(fetch = FetchType.LAZY)
     private SharedSchedule sharedSchedule;
 
-    private String content;
-
-    private LocalDate startDate;
-
-    private LocalDate endDate;
-
-    private ScheduleOpenStatus openStatus;
-
     @CreatedDate
     private LocalDate createdAt;
 

@@ -17,51 +17,53 @@ public class SharedCalendarController {
 
     @GetMapping()
     public ResponseEntity<List<SharedCalendarResponseDTO>> getSharedCalendarList() {
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(sharedCalendarService.getMySharedCalendars());
     }
 
     @GetMapping("/{calendarId}")
-    public ResponseEntity<SharedCalendarResponseDTO> getSharedCalendar(@PathVariable String calendarId) {
-
-        return ResponseEntity.ok(null);
+    public ResponseEntity<SharedCalendarResponseDTO> getSharedCalendar(@PathVariable Long calendarId) {
+        return ResponseEntity.ok(sharedCalendarService.getSharedCalendar(calendarId));
     }
 
     @PostMapping()
     public ResponseEntity<?> createSharedCalendar(@RequestBody CreateSharedCalendarRequestDTO createSharedCalendarRequestDTO) {
-
+        sharedCalendarService.createSharedCalendar(createSharedCalendarRequestDTO);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{calendarId}")
     public ResponseEntity<?> updateSharedCalendar(@PathVariable Long calendarId, @RequestBody UpdateSharedCalendarRequestDTO updateSharedCalendarRequestDTO) {
-
+        sharedCalendarService.updateSharedCalendar(calendarId, updateSharedCalendarRequestDTO);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{calendarId}")
     public ResponseEntity<?> deleteSharedCalendar(@PathVariable Long calendarId) {
-
+        sharedCalendarService.deleteSharedCalendar(calendarId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/invite")
     public ResponseEntity<?> inviteSharedCalendar() {
-
+        sharedCalendarService.invite();
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/invite/{inviteId}")
     public ResponseEntity<?> refuseInvite(@PathVariable Long inviteId) {
+        sharedCalendarService.reject(inviteId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/join")
     public ResponseEntity<?> joinSharedCalendar() {
+        sharedCalendarService.join();
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/leave/{calendarId}")
     public ResponseEntity<?> leaveSharedCalendar(@PathVariable Long calendarId) {
+        sharedCalendarService.leave(calendarId);
         return ResponseEntity.ok().build();
     }
 }
