@@ -2,13 +2,12 @@ package kr.ac.kookmin.wink.planlist.individual.schedule.dto;
 
 import kr.ac.kookmin.wink.planlist.individual.schedule.domain.IndividualSchedule;
 import kr.ac.kookmin.wink.planlist.individual.schedule.domain.ScheduleOpenStatus;
-import kr.ac.kookmin.wink.planlist.user.domain.User;
+import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -21,17 +20,14 @@ public class IndividualScheduleResponseDTO {
     private LocalDateTime endDate;
     private ScheduleOpenStatus openStatus;
     private Integer colorId;
-    private List<Long> scheduleMemberList;
+    private List<UserDTO> scheduleMemberList;
     private Long calenderId;
 
     public static IndividualScheduleResponseDTO create(IndividualSchedule schedule) {
-        List<Long> scheduleMemberList = new ArrayList<>();
-
-        if (schedule.getScheduleMemberList() != null) {
-            for (User user : schedule.getScheduleMemberList()) {
-                scheduleMemberList.add(user.getId());
-            }
-        }
+        List<UserDTO> scheduleMembers = schedule.getScheduleMemberList()
+                .stream()
+                .map(UserDTO::create)
+                .toList();
 
         return IndividualScheduleResponseDTO.builder()
                 .id(schedule.getId())
@@ -40,7 +36,7 @@ public class IndividualScheduleResponseDTO {
                 .endDate(schedule.getEndDate())
                 .openStatus(schedule.getOpenStatus())
                 .colorId(schedule.getColorId())
-                .scheduleMemberList(scheduleMemberList)
+                .scheduleMemberList(scheduleMembers)
                 .calenderId(schedule.getIndividualCalendar().getId())
                 .build();
     }

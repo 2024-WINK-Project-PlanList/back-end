@@ -26,12 +26,30 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+#env file#
+application-local.yml
+
+
+### Database ###
+*.accdb
+*.db
+*.dbf
+*.mdb
+*.pdb
+*.sqlite3
+*.db-shm
+*.db-wal
+
+
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
+
+application-local.yml
 
 ### VS Code ###
 .vscode/

@@ -17,6 +17,6 @@ public class IndividualScheduleRequestDTO {
     private LocalDateTime endDate;
     private ScheduleOpenStatus openStatus;
     private Integer colorId;
-    private List<Long> scheduleMemberList;
+    private List<Long> scheduleMembers;
     private Long calendarId;
 }

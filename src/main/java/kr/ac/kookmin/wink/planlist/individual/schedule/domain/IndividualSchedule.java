@@ -16,10 +16,9 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "\"individual_schedule\"")
+@Table(name = "individual_schedule")
 @Entity
 public class IndividualSchedule {
-
     @Id
     @Column(name = "schedule_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +27,6 @@ public class IndividualSchedule {
     private String content;
 
     private LocalDateTime startDate;
-
     private LocalDateTime endDate;
 
     @Column(name = "open_status")

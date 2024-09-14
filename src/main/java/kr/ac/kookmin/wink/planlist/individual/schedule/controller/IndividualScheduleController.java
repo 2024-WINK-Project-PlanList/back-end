@@ -7,29 +7,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/schedule/individual")
+@RequestMapping("/schedule")
 public class IndividualScheduleController {
 
     private final IndividualScheduleService individualScheduleService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<?> createSchedule(@RequestBody IndividualScheduleRequestDTO individualScheduleRequestDTO) {
         individualScheduleService.createSchedule(individualScheduleRequestDTO);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{scheduleId}")
-    public IndividualScheduleResponseDTO findSchedule(@PathVariable Long scheduleId) {
-        return individualScheduleService.findSchedule(scheduleId);
-    }
-
-    @GetMapping("/list/{calendarId}")
-    public List<IndividualScheduleResponseDTO> getScheduleList(@PathVariable Long calendarId) {
-        return individualScheduleService.getSchedules(calendarId);
+    public ResponseEntity<IndividualScheduleResponseDTO> findSchedule(@PathVariable Long scheduleId) {
+        return ResponseEntity.ok(individualScheduleService.findSchedule(scheduleId));
     }
 
     @PatchMapping("/{scheduleId}")
@@ -43,5 +36,4 @@ public class IndividualScheduleController {
         individualScheduleService.deleteSchedule(scheduleId);
         return ResponseEntity.ok().build();
     }
-
 }

@@ -1,11 +1,14 @@
 package kr.ac.kookmin.wink.planlist.friend.controller;
 
+import kr.ac.kookmin.wink.planlist.friend.dto.request.AcceptFriendRequestDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.request.CreateFriendshipRequestDTO;
+import kr.ac.kookmin.wink.planlist.friend.dto.response.SearchUserResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.dto.response.UserFriendsResponseDTO;
-import kr.ac.kookmin.wink.planlist.friend.dto.response.WaitingFriendsResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.service.FriendshipService;
+import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,16 +20,21 @@ public class FriendController {
 
     private final FriendshipService friendshipService;
 
-    @PostMapping("/request")
+    @PostMapping
     public ResponseEntity<?> request(@RequestBody CreateFriendshipRequestDTO requestDTO) {
         friendshipService.createFriendship(requestDTO, System.currentTimeMillis());
 
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{friendshipId}/accept")
-    public ResponseEntity<?> accept(@PathVariable("friendshipId") Long friendshipId) {
-        friendshipService.accept(friendshipId);
+    @GetMapping
+    public ResponseEntity<List<UserFriendsResponseDTO>> getFriends(@AuthenticationPrincipal SecurityUser securityUser) {
+        return ResponseEntity.ok().body(friendshipService.findAllFriendsByUser(securityUser.getUser()));
+    }
+
+    @PostMapping("/accept")
+    public ResponseEntity<?> accept(@RequestBody AcceptFriendRequestDTO requestDTO) {
+        friendshipService.accept(requestDTO);
 
         return ResponseEntity.ok().build();
     }
@@ -38,18 +46,18 @@ public class FriendController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<UserFriendsResponseDTO>> getFriends(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok().body(friendshipService.findAllFriendsByUser(userId));
+    @GetMapping("/search")
+    public ResponseEntity<List<SearchUserResponseDTO>> getUsersBySearch(
+            @AuthenticationPrincipal SecurityUser securityUser,
+            @RequestParam(name = "keyword") String keyword,
+            @RequestParam(name = "onlyFriends") boolean onlyFriends) {
+        return ResponseEntity.ok().body(friendshipService.findAllUsersBySearch(securityUser.getUser(), keyword, onlyFriends));
     }
 
-    @GetMapping("/{userId}/requests")
-    public ResponseEntity<List<WaitingFriendsResponseDTO>> getRequestedFriendships(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok().body(friendshipService.findAllWaitingFriendshipsByUser(userId, true));
-    }
 
-    @GetMapping("/{userId}/received")
-    public ResponseEntity<List<WaitingFriendsResponseDTO>> getReceivedFriendships(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok().body(friendshipService.findAllWaitingFriendshipsByUser(userId, false));
-    }
+
+//    @GetMapping("/test/{userId}")
+//    public List<User> test(@PathVariable("userId") Long userId) {
+//        return friendshipService.test(userId);
+//    }
 }
