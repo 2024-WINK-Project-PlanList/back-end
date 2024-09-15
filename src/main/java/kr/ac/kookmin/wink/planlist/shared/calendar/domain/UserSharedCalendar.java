@@ -18,7 +18,7 @@ import java.time.LocalDate;
 public class UserSharedCalendar implements Persistable<UserSharedCalendarId> {
 
     @EmbeddedId
-    private UserSharedCalendarId id;
+    private UserSharedCalendarId id = new UserSharedCalendarId();
 
     @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY)

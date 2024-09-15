@@ -1,7 +1,9 @@
 package kr.ac.kookmin.wink.planlist.shared.calendar;
 
+import kr.ac.kookmin.wink.planlist.global.jwt.TokenProvider;
 import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.CreateSharedCalendarRequestDTO;
+import kr.ac.kookmin.wink.planlist.shared.calendar.dto.InviteSharedCalendarDTO;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.SharedCalendarResponseDTO;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.UpdateSharedCalendarRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +30,8 @@ public class SharedCalendarController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> createSharedCalendar(@RequestBody CreateSharedCalendarRequestDTO createSharedCalendarRequestDTO) {
-        sharedCalendarService.createSharedCalendar(createSharedCalendarRequestDTO);
+    public ResponseEntity<?> createSharedCalendar(@RequestBody CreateSharedCalendarRequestDTO createSharedCalendarRequestDTO, @AuthenticationPrincipal SecurityUser securityUser) {
+        sharedCalendarService.createSharedCalendar(createSharedCalendarRequestDTO, securityUser);
         return ResponseEntity.ok().build();
     }
 
@@ -45,27 +47,32 @@ public class SharedCalendarController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/invite")
+    public List<SharedCalendarResponseDTO> invitedSharedCalendarList(@AuthenticationPrincipal SecurityUser securityUser) {
+        return sharedCalendarService.invitedSharedCalendarList(securityUser);
+    }
+
     @PostMapping("/invite")
-    public ResponseEntity<?> inviteSharedCalendar() {
-        sharedCalendarService.invite();
+    public ResponseEntity<?> inviteSharedCalendar(@RequestBody InviteSharedCalendarDTO inviteSharedCalendarDTO) {
+        sharedCalendarService.invite(inviteSharedCalendarDTO);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/invite/{inviteId}")
-    public ResponseEntity<?> refuseInvite(@PathVariable Long inviteId) {
-        sharedCalendarService.reject(inviteId);
+    @DeleteMapping("/invite/{calendarId}")
+    public ResponseEntity<?> refuseInvite(@PathVariable Long calendarId, @AuthenticationPrincipal SecurityUser securityUser) {
+        sharedCalendarService.reject(calendarId, securityUser);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/join")
-    public ResponseEntity<?> joinSharedCalendar() {
-        sharedCalendarService.join();
+    @PostMapping("/join/{calendarId}")
+    public ResponseEntity<?> joinSharedCalendar(@PathVariable Long calendarId, @AuthenticationPrincipal SecurityUser securityUser) {
+        sharedCalendarService.join(calendarId, securityUser);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/leave/{calendarId}")
-    public ResponseEntity<?> leaveSharedCalendar(@PathVariable Long calendarId) {
-        sharedCalendarService.leave(calendarId);
+    public ResponseEntity<?> leaveSharedCalendar(@PathVariable Long calendarId, @AuthenticationPrincipal SecurityUser securityUser) {
+        sharedCalendarService.leave(calendarId, securityUser);
         return ResponseEntity.ok().build();
     }
 }

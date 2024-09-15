@@ -10,9 +10,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Getter
-public class CreateSharedCalendarRequestDTO {
-    private String name;
-    private String description;
-    private String imageBase64;
-    private List<UserDTO> membersToInvite;
+public class InviteSharedCalendarDTO {
+    private Long calendarId;
+    private List<UserDTO> invitingUsers;
 }

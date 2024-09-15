@@ -10,12 +10,14 @@ import lombok.Getter;
 @Getter
 public class SharedCalendarResponseDTO {
 
+    private Long id;
     private String name;
     private String description;
     private String imageBase64;
 
     public static SharedCalendarResponseDTO from(SharedCalendar sharedCalendar) {
         return SharedCalendarResponseDTO.builder()
+                .id(sharedCalendar.getId())
                 .name(sharedCalendar.getName())
                 .description(sharedCalendar.getDescription())
                 .imageBase64(sharedCalendar.getImageBase64())
