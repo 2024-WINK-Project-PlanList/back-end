@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,8 +90,9 @@ public class FriendshipService {
         }
     }
 
+    //@Notify(NotificationMessage.FRIEND_REQUEST)
     @Transactional
-    public Friendship createFriendship(CreateFriendshipRequestDTO requestDTO, Long currentTime) {
+    public Friendship createFriendship(CreateFriendshipRequestDTO requestDTO) {
         Long followerId = requestDTO.getFollowerId();
         Long followingId = requestDTO.getFollowingId();
         User follower = userRepository.findById(followerId)
@@ -103,17 +104,20 @@ public class FriendshipService {
                 .follower(follower)
                 .following(following)
                 .status(FriendStatus.WAITING)
-                .requestedAt(new Timestamp(currentTime))
+                .requestedAt(LocalDateTime.now())
                 .build();
 
         return friendshipRepository.save(friendship);
     }
 
+    //@Notify(NotificationMessage.FRIEND_ACCEPTED)
     @Transactional
-    public void accept(AcceptFriendRequestDTO requestDTO) {
+    public Friendship accept(AcceptFriendRequestDTO requestDTO) {
         Friendship friendship = findById(requestDTO.getFriendshipId());
 
         friendship.setStatus(FriendStatus.FRIEND);
+
+        return friendship;
     }
 
     @Transactional
