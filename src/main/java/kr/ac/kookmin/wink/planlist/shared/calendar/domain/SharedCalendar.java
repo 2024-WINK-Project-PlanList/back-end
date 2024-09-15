@@ -12,18 +12,22 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "\"sharedCalendar\"")
+@Table(name = "\"shared_calendar\"")
 @Entity
 public class SharedCalendar {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "description")
     private String description;
 
+    @Column(name = "image_base_64")
     private String imageBase64;
 
     @OneToMany(mappedBy = "sharedCalendar")

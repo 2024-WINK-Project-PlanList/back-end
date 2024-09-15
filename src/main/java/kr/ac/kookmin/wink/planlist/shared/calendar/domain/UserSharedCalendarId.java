@@ -15,11 +15,11 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class UserSharedCalendarId implements Serializable {
 
-    @Column(name = "userId")
+    @Column(name = "user_id")
     @NotNull
     private Long userId;
 
-    @Column(name = "sharedCalendarId")
+    @Column(name = "shared_calendar_id")
     @NotNull
     private Long sharedCalendarId;
 }

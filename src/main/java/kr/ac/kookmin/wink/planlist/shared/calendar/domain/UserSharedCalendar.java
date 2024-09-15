@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "\"userSharedCalendar\"")
+@Table(name = "\"user_shared_calendar\"")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class UserSharedCalendar implements Persistable<UserSharedCalendarId> {
@@ -23,19 +23,20 @@ public class UserSharedCalendar implements Persistable<UserSharedCalendarId> {
     @EmbeddedId
     private UserSharedCalendarId id = new UserSharedCalendarId();
 
-    @MapsId("userId")
+    @MapsId("user_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @MapsId("sharedCalendarId")
+    @MapsId("shared_calendar_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private SharedCalendar sharedCalendar;
 
     @ColumnDefault("false")
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "invitation_status", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean invitationStatus;
 
     @CreatedDate
+    @Column(name = "created_date")
     private LocalDate createdDate;
 
     @Override

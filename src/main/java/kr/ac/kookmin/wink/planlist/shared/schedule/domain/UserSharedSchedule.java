@@ -15,22 +15,23 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "\"userSharedSchedule\"")
+@Table(name = "\"user_shared_schedule\"")
 @Entity
 public class UserSharedSchedule implements Persistable<UserSharedScheduleId> {
 
     @EmbeddedId
     private UserSharedScheduleId id;
 
-    @MapsId("userId")
+    @MapsId("user_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @MapsId("sharedScheduleId")
+    @MapsId("shared_schedule_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private SharedSchedule sharedSchedule;
 
     @CreatedDate
+    @Column(name = "created_at")
     private LocalDate createdAt;
 
     @Override

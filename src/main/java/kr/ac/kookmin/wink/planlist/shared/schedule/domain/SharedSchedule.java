@@ -14,26 +14,32 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "\"sharedSchedule\"")
+@Table(name = "\"shared_schedule\"")
 @Entity
 public class SharedSchedule {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "content")
     private String content;
 
+    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
+    @Column(name = "end_date")
     private LocalDate endDate;
 
+    @Column(name = "open_status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private ScheduleOpenStatus openStatus;
 
-    @OneToMany(mappedBy = "sharedSchedule")
+    @OneToMany(mappedBy = "shared_schedule")
     private List<UserSharedSchedule> userSharedScheduleList = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "calendarId")
+    @JoinColumn(name = "calendar_id")
     private SharedCalendar sharedCalendar;
 }
