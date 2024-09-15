@@ -1,6 +1,5 @@
 package kr.ac.kookmin.wink.planlist.shared.calendar;
 
-import kr.ac.kookmin.wink.planlist.global.jwt.TokenProvider;
 import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.CreateSharedCalendarRequestDTO;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.InviteSharedCalendarDTO;
@@ -47,11 +46,6 @@ public class SharedCalendarController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/invite")
-    public List<SharedCalendarResponseDTO> invitedSharedCalendarList(@AuthenticationPrincipal SecurityUser securityUser) {
-        return sharedCalendarService.invitedSharedCalendarList(securityUser);
-    }
-
     @PostMapping("/invite")
     public ResponseEntity<?> inviteSharedCalendar(@RequestBody InviteSharedCalendarDTO inviteSharedCalendarDTO) {
         sharedCalendarService.invite(inviteSharedCalendarDTO);
@@ -64,7 +58,7 @@ public class SharedCalendarController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/join/{calendarId}")
+    @PatchMapping("/join/{calendarId}")
     public ResponseEntity<?> joinSharedCalendar(@PathVariable Long calendarId, @AuthenticationPrincipal SecurityUser securityUser) {
         sharedCalendarService.join(calendarId, securityUser);
         return ResponseEntity.ok().build();

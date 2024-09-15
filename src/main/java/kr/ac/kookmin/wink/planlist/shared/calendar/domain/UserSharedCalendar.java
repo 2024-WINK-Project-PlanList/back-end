@@ -3,8 +3,10 @@ package kr.ac.kookmin.wink.planlist.shared.calendar.domain;
 import jakarta.persistence.*;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 
@@ -15,6 +17,7 @@ import java.time.LocalDate;
 @Getter
 @Table(name = "\"userSharedCalendar\"")
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class UserSharedCalendar implements Persistable<UserSharedCalendarId> {
 
     @EmbeddedId
@@ -28,7 +31,9 @@ public class UserSharedCalendar implements Persistable<UserSharedCalendarId> {
     @ManyToOne(fetch = FetchType.LAZY)
     private SharedCalendar sharedCalendar;
 
-    private int invitationStatus;
+    @ColumnDefault("false")
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private boolean invitationStatus;
 
     @CreatedDate
     private LocalDate createdDate;
