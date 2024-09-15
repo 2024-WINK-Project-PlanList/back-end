@@ -25,4 +25,16 @@ public class ErrorResponseDTO {
                 .timestamp(timestamp)
                 .build();
     }
+
+    public static ErrorResponseDTO create(Exception e, Instant timestamp) {
+        GlobalErrorCode errorCode = GlobalErrorCode.DEFAULT;
+
+        return ErrorResponseDTO
+                .builder()
+                .code(errorCode.name())
+                .message(e.getMessage())
+                .status(errorCode.getHttpStatus().value())
+                .timestamp(timestamp)
+                .build();
+    }
 }

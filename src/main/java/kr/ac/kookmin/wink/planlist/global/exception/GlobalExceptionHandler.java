@@ -17,4 +17,13 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponseDTO, httpStatus);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDTO> handleException(Exception exception) {
+        ErrorCode errorCode = GlobalErrorCode.DEFAULT;
+        ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.create(exception, Instant.now());
+        HttpStatus httpStatus = errorCode.getHttpStatus();
+
+        return new ResponseEntity<>(errorResponseDTO, httpStatus);
+    }
 }
