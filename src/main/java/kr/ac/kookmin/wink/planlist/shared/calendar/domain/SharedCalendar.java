@@ -1,6 +1,7 @@
 package kr.ac.kookmin.wink.planlist.shared.calendar.domain;
 
 import jakarta.persistence.*;
+import kr.ac.kookmin.wink.planlist.shared.calendar.dto.UpdateSharedCalendarRequestDTO;
 import kr.ac.kookmin.wink.planlist.shared.schedule.domain.SharedSchedule;
 import lombok.*;
 
@@ -27,5 +28,12 @@ public class SharedCalendar {
 
     @OneToMany(mappedBy = "sharedCalendar")
     private List<SharedSchedule> sharedScheduleList;
+
+    public void update(UpdateSharedCalendarRequestDTO updateSharedCalendarRequestDTO) {
+        this.name = updateSharedCalendarRequestDTO.getName();
+        this.description = updateSharedCalendarRequestDTO.getDescription();
+        this.imageBase64 = updateSharedCalendarRequestDTO.getImageBase64();
+    }
+
 
 }

@@ -1,10 +1,12 @@
 package kr.ac.kookmin.wink.planlist.shared.calendar;
 
+import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.CreateSharedCalendarRequestDTO;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.SharedCalendarResponseDTO;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.UpdateSharedCalendarRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,8 +18,8 @@ public class SharedCalendarController {
     private final SharedCalendarService sharedCalendarService;
 
     @GetMapping()
-    public ResponseEntity<List<SharedCalendarResponseDTO>> getSharedCalendarList() {
-        return ResponseEntity.ok(sharedCalendarService.getMySharedCalendars());
+    public ResponseEntity<List<SharedCalendarResponseDTO>> getSharedCalendarList(@AuthenticationPrincipal SecurityUser securityUser) {
+        return ResponseEntity.ok(sharedCalendarService.getMySharedCalendars(securityUser));
     }
 
     @GetMapping("/{calendarId}")
