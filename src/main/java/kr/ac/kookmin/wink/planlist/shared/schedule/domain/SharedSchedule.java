@@ -19,7 +19,7 @@ import java.util.List;
 public class SharedSchedule {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "shared_schedule_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -36,7 +36,7 @@ public class SharedSchedule {
     @Enumerated(EnumType.STRING)
     private ScheduleOpenStatus openStatus;
 
-    @OneToMany(mappedBy = "shared_schedule")
+    @OneToMany(mappedBy = "sharedSchedule")
     private List<UserSharedSchedule> userSharedScheduleList = new ArrayList<>();
 
     @ManyToOne

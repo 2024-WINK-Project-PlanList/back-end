@@ -17,7 +17,7 @@ import java.util.List;
 public class SharedCalendar {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "shared_calendar_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -27,8 +27,8 @@ public class SharedCalendar {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "image_base_64")
-    private String imageBase64;
+    @Column(name = "calendar_image_path")
+    private String calendarImagePath;
 
     @OneToMany(mappedBy = "sharedCalendar")
     private List<SharedSchedule> sharedScheduleList;
@@ -36,7 +36,6 @@ public class SharedCalendar {
     public void update(UpdateSharedCalendarRequestDTO updateSharedCalendarRequestDTO) {
         this.name = updateSharedCalendarRequestDTO.getName();
         this.description = updateSharedCalendarRequestDTO.getDescription();
-        this.imageBase64 = updateSharedCalendarRequestDTO.getImageBase64();
     }
 
 

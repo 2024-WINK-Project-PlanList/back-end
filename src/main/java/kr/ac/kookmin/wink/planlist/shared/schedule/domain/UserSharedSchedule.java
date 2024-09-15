@@ -22,11 +22,11 @@ public class UserSharedSchedule implements Persistable<UserSharedScheduleId> {
     @EmbeddedId
     private UserSharedScheduleId id;
 
-    @MapsId("user_id")
+    @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @MapsId("shared_schedule_id")
+    @MapsId("sharedScheduleId")
     @ManyToOne(fetch = FetchType.LAZY)
     private SharedSchedule sharedSchedule;
 

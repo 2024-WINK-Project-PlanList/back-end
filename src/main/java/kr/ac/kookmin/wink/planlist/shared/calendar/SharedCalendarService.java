@@ -2,6 +2,7 @@ package kr.ac.kookmin.wink.planlist.shared.calendar;
 
 import jakarta.transaction.Transactional;
 import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
+import kr.ac.kookmin.wink.planlist.global.s3.S3Service;
 import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.SharedCalendar;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.UserSharedCalendar;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -30,6 +32,7 @@ public class SharedCalendarService {
     private final SharedCalendarRepository sharedCalendarRepository;
     private final UserSharedCalendarRepository userSharedCalendarRepository;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     public List<SharedCalendarResponseDTO> getMySharedCalendars(SecurityUser securityUser) {
         User user = securityUser.getUser();
@@ -51,8 +54,12 @@ public class SharedCalendarService {
         SharedCalendar sharedCalendar = SharedCalendar.builder()
                 .name(createSharedCalendarRequestDTO.getName())
                 .description(createSharedCalendarRequestDTO.getDescription())
-                .imageBase64(createSharedCalendarRequestDTO.getImageBase64())
                 .build();
+
+        String randomName = UUID.randomUUID().toString();
+        String imagePath = s3Service.uploadBase64Image(createSharedCalendarRequestDTO.getImageBase64(), "profile/calendar/", randomName);
+
+        sharedCalendar.setCalendarImagePath(imagePath);
         sharedCalendarRepository.save(sharedCalendar);
 
         UserSharedCalendar userSharedCalendar = UserSharedCalendar.builder()

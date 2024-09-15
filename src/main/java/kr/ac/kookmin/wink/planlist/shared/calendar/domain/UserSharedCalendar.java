@@ -23,11 +23,11 @@ public class UserSharedCalendar implements Persistable<UserSharedCalendarId> {
     @EmbeddedId
     private UserSharedCalendarId id = new UserSharedCalendarId();
 
-    @MapsId("user_id")
+    @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @MapsId("shared_calendar_id")
+    @MapsId("sharedCalendarId")
     @ManyToOne(fetch = FetchType.LAZY)
     private SharedCalendar sharedCalendar;
 

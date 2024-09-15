@@ -13,14 +13,14 @@ public class SharedCalendarResponseDTO {
     private Long id;
     private String name;
     private String description;
-    private String imageBase64;
+    private String calendarImagePath;
 
     public static SharedCalendarResponseDTO from(SharedCalendar sharedCalendar) {
         return SharedCalendarResponseDTO.builder()
                 .id(sharedCalendar.getId())
                 .name(sharedCalendar.getName())
                 .description(sharedCalendar.getDescription())
-                .imageBase64(sharedCalendar.getImageBase64())
+                .calendarImagePath(sharedCalendar.getCalendarImagePath())
                 .build();
     }
 
