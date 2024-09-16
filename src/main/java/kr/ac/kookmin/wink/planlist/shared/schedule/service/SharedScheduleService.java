@@ -1,4 +1,4 @@
-package kr.ac.kookmin.wink.planlist.shared.schedule;
+package kr.ac.kookmin.wink.planlist.shared.schedule.service;
 
 import kr.ac.kookmin.wink.planlist.shared.schedule.repository.UserSharedScheduleRepository;
 import kr.ac.kookmin.wink.planlist.shared.schedule.repository.SharedScheduleRepository;

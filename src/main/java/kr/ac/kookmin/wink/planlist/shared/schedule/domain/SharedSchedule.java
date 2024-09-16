@@ -6,8 +6,6 @@ import kr.ac.kookmin.wink.planlist.shared.calendar.domain.SharedCalendar;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -35,9 +33,6 @@ public class SharedSchedule {
     @Column(name = "open_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ScheduleOpenStatus openStatus;
-
-    @OneToMany(mappedBy = "sharedSchedule")
-    private List<UserSharedSchedule> userSharedScheduleList = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "calendar_id")

@@ -8,14 +8,14 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "\"user_shared_calendar\"")
+@Table(name = "user_shared_calendar")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class UserSharedCalendar implements Persistable<UserSharedCalendarId> {
@@ -36,8 +36,8 @@ public class UserSharedCalendar implements Persistable<UserSharedCalendarId> {
     private boolean invitationStatus;
 
     @CreatedDate
-    @Column(name = "created_date")
-    private LocalDate createdDate;
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate;
 
     @Override
     public UserSharedCalendarId getId() {
