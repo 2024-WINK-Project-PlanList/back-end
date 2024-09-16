@@ -23,8 +23,11 @@ public class SharedSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "content")
-    private String content;
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
@@ -35,9 +38,6 @@ public class SharedSchedule {
     @Column(name = "open_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ScheduleOpenStatus openStatus;
-
-    @OneToMany(mappedBy = "sharedSchedule")
-    private List<UserSharedSchedule> userSharedScheduleList = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "calendar_id")
