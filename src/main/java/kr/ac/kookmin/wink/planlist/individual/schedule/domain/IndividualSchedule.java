@@ -24,15 +24,20 @@ public class IndividualSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "content")
     private String content;
 
+    @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
+
+    @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "open_status")
+    @Column(name = "open_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ScheduleOpenStatus openStatus;
 
+    @Column(name = "color_id")
     private Integer colorId;
 
     @Builder.Default
