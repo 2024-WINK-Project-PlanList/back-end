@@ -12,7 +12,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class IndividualScheduleRequestDTO {
-    private String content;
+    private String name;
+    private String description;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private ScheduleOpenStatus openStatus;
