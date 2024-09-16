@@ -38,4 +38,11 @@ public class UserSharedSchedule implements Persistable<UserSharedScheduleId> {
     public boolean isNew() {
         return createdAt == null;
     }
+
+    public UserSharedSchedule(User user, SharedSchedule sharedSchedule) {
+        this.id = new UserSharedScheduleId(user.getId(), sharedSchedule.getId());
+        this.user = user;
+        this.sharedSchedule = sharedSchedule;
+        this.createdAt = LocalDate.now();
+    }
 }

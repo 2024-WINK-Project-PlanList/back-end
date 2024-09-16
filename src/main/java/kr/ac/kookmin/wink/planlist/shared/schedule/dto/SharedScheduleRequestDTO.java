@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Getter
-public class CreateSharedScheduleDTO {
+public class SharedScheduleRequestDTO {
     private String name;
     private String description;
     private LocalDateTime startDate;
