@@ -58,9 +58,11 @@ public class UserService {
     public void changeUserProfile(ChangeProfileRequestDTO requestDTO, User user) {
         user.updateUserProfile(requestDTO.getNickname(), requestDTO.getSongId(), requestDTO.getComment());
 
-        Optional<String> profileImageOptional = Optional.of(requestDTO.getProfileImage());
+        String profileImage = requestDTO.getProfileImage();
 
-        profileImageOptional.ifPresent(image -> uploadUserProfileImage(user, image));
+        if (profileImage != null && !profileImage.isEmpty()) {
+            uploadUserProfileImage(user, profileImage);
+        }
     }
 
     private void uploadUserProfileImage(User user, String imageBase64) {
