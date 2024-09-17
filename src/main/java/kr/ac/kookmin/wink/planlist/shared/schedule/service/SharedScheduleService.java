@@ -1,4 +1,4 @@
-package kr.ac.kookmin.wink.planlist.shared.schedule;
+package kr.ac.kookmin.wink.planlist.shared.schedule.service;
 
 import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.SharedCalendar;

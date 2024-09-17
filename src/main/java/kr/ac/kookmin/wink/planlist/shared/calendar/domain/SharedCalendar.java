@@ -1,18 +1,15 @@
 package kr.ac.kookmin.wink.planlist.shared.calendar.domain;
 
 import jakarta.persistence.*;
-import kr.ac.kookmin.wink.planlist.shared.calendar.dto.UpdateSharedCalendarRequestDTO;
-import kr.ac.kookmin.wink.planlist.shared.schedule.domain.SharedSchedule;
+import kr.ac.kookmin.wink.planlist.shared.calendar.dto.request.UpdateSharedCalendarRequestDTO;
 import lombok.*;
-
-import java.util.List;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "\"shared_calendar\"")
+@Table(name = "shared_calendar")
 @Entity
 public class SharedCalendar {
 
@@ -30,13 +27,8 @@ public class SharedCalendar {
     @Column(name = "calendar_image_path")
     private String calendarImagePath;
 
-    @OneToMany(mappedBy = "sharedCalendar")
-    private List<SharedSchedule> sharedScheduleList;
-
     public void update(UpdateSharedCalendarRequestDTO updateSharedCalendarRequestDTO) {
         this.name = updateSharedCalendarRequestDTO.getName();
         this.description = updateSharedCalendarRequestDTO.getDescription();
     }
-
-
 }

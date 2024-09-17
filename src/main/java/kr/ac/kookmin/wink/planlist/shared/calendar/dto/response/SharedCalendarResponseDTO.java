@@ -1,4 +1,4 @@
-package kr.ac.kookmin.wink.planlist.shared.calendar.dto;
+package kr.ac.kookmin.wink.planlist.shared.calendar.dto.response;
 
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.SharedCalendar;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ public class SharedCalendarResponseDTO {
     private String description;
     private String calendarImagePath;
 
-    public static SharedCalendarResponseDTO from(SharedCalendar sharedCalendar) {
+    public static SharedCalendarResponseDTO create(SharedCalendar sharedCalendar) {
         return SharedCalendarResponseDTO.builder()
                 .id(sharedCalendar.getId())
                 .name(sharedCalendar.getName())

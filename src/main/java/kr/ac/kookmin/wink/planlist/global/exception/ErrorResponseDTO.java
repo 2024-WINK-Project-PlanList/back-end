@@ -32,7 +32,7 @@ public class ErrorResponseDTO {
         return ErrorResponseDTO
                 .builder()
                 .code(errorCode.name())
-                .message(e.getMessage())
+                .message(e.getClass().getSimpleName() + ": " + e.getMessage())
                 .status(errorCode.getHttpStatus().value())
                 .timestamp(timestamp)
                 .build();
