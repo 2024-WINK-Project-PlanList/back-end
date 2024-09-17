@@ -1,11 +1,10 @@
-package kr.ac.kookmin.wink.planlist.shared.schedule;
+package kr.ac.kookmin.wink.planlist.shared.schedule.controller;
 
-import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import kr.ac.kookmin.wink.planlist.shared.schedule.dto.SharedScheduleRequestDTO;
 import kr.ac.kookmin.wink.planlist.shared.schedule.dto.SharedScheduleResponseDTO;
+import kr.ac.kookmin.wink.planlist.shared.schedule.service.SharedScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
