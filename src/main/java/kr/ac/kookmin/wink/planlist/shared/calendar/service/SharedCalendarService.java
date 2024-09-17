@@ -1,94 +1,95 @@
-package kr.ac.kookmin.wink.planlist.shared.calendar;
+package kr.ac.kookmin.wink.planlist.shared.calendar.service;
 
-import jakarta.transaction.Transactional;
 import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.global.s3.S3Service;
-import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.SharedCalendar;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.UserSharedCalendar;
-import kr.ac.kookmin.wink.planlist.shared.calendar.dto.CreateSharedCalendarRequestDTO;
-import kr.ac.kookmin.wink.planlist.shared.calendar.dto.InviteSharedCalendarDTO;
-import kr.ac.kookmin.wink.planlist.shared.calendar.dto.SharedCalendarResponseDTO;
-import kr.ac.kookmin.wink.planlist.shared.calendar.dto.UpdateSharedCalendarRequestDTO;
-import kr.ac.kookmin.wink.planlist.shared.calendar.repository.UserSharedCalendarRepository;
+import kr.ac.kookmin.wink.planlist.shared.calendar.dto.request.CreateSharedCalendarRequestDTO;
+import kr.ac.kookmin.wink.planlist.shared.calendar.dto.request.InviteSharedCalendarRequestDTO;
+import kr.ac.kookmin.wink.planlist.shared.calendar.dto.request.UpdateSharedCalendarRequestDTO;
+import kr.ac.kookmin.wink.planlist.shared.calendar.dto.response.SharedCalendarResponseDTO;
 import kr.ac.kookmin.wink.planlist.shared.calendar.repository.SharedCalendarRepository;
+import kr.ac.kookmin.wink.planlist.shared.calendar.repository.UserSharedCalendarRepository;
 import kr.ac.kookmin.wink.planlist.shared.exeption.SharedErrorCode;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
-import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
-import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
+import kr.ac.kookmin.wink.planlist.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class SharedCalendarService {
 
     private final SharedCalendarRepository sharedCalendarRepository;
     private final UserSharedCalendarRepository userSharedCalendarRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final S3Service s3Service;
 
-    public List<SharedCalendarResponseDTO> getMySharedCalendars(SecurityUser securityUser) {
-        User user = securityUser.getUser();
-        List<UserSharedCalendar> calendars = userSharedCalendarRepository.findAllByUser(user);
-        if (calendars.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<SharedCalendarResponseDTO> response = new ArrayList<>();
-        for (UserSharedCalendar calendar : calendars) {
-            if (calendar.isInvitationStatus()) {
-                response.add(SharedCalendarResponseDTO.from(calendar.getSharedCalendar()));
-            }
-        }
-        return response;
+    public List<SharedCalendarResponseDTO> getMySharedCalendars(User user) {
+        return userSharedCalendarRepository.findAllByUser(user)
+                .stream()
+                .filter(UserSharedCalendar::isInvitationStatus)
+                .map(userSharedCalendar ->
+                        SharedCalendarResponseDTO.create(userSharedCalendar.getSharedCalendar())
+                )
+                .toList();
     }
 
-    public void createSharedCalendar(CreateSharedCalendarRequestDTO createSharedCalendarRequestDTO, SecurityUser securityUser) {
+    @Transactional
+    public void createSharedCalendar(CreateSharedCalendarRequestDTO requestDTO, User user) {
         SharedCalendar sharedCalendar = SharedCalendar.builder()
-                .name(createSharedCalendarRequestDTO.getName())
-                .description(createSharedCalendarRequestDTO.getDescription())
+                .name(requestDTO.getName())
+                .description(requestDTO.getDescription())
                 .build();
 
         String randomName = UUID.randomUUID().toString();
-        String imagePath = s3Service.uploadBase64Image(createSharedCalendarRequestDTO.getImageBase64(), "profile/calendar/", randomName);
+        String imagePath = s3Service.uploadBase64Image(requestDTO.getImageBase64(), "profile/calendar/", randomName);
 
         sharedCalendar.setCalendarImagePath(imagePath);
         sharedCalendarRepository.save(sharedCalendar);
 
         UserSharedCalendar userSharedCalendar = UserSharedCalendar.builder()
-                .user(securityUser.getUser())
+                .user(user)
                 .sharedCalendar(sharedCalendar)
                 .invitationStatus(true)
-                .createdDate(LocalDate.now())
                 .build();
+
         userSharedCalendarRepository.save(userSharedCalendar);
 
-        if (createSharedCalendarRequestDTO.getMembersToInvite() == null) {
+        List<Long> membersToInvite = requestDTO.getMembersToInvite();
+
+        if (membersToInvite == null || membersToInvite.isEmpty()) {
             return;
         }
 
-        for (UserDTO userDTO : createSharedCalendarRequestDTO.getMembersToInvite()) {
-            User user = userRepository.findById(userDTO.getId()).get();
-            UserSharedCalendar userSharedCalendar1 = UserSharedCalendar.builder()
-                    .user(user)
-                    .sharedCalendar(sharedCalendar)
-                    .invitationStatus(false)
-                    .createdDate(LocalDate.now())
-                    .build();
-            userSharedCalendarRepository.save(userSharedCalendar1);
-        }
+        membersToInvite
+                .stream()
+                .map(userService::findUserById)
+                .forEach((toInvite) -> createUserSharedCalendar(toInvite, sharedCalendar));
     }
 
+    private void createUserSharedCalendar(User user, SharedCalendar sharedCalendar) {
+        UserSharedCalendar userSharedCalendar1 = UserSharedCalendar.builder()
+                .user(user)
+                .sharedCalendar(sharedCalendar)
+                .invitationStatus(false)
+                .build();
+
+        userSharedCalendarRepository.save(userSharedCalendar1);
+    }
+
+    @Transactional
     public void updateSharedCalendar(Long calendarId, UpdateSharedCalendarRequestDTO updateSharedCalendarRequestDTO) {
         SharedCalendar sharedCalendar = sharedCalendarRepository.findById(calendarId)
                 .orElseThrow(() -> new CustomException(SharedErrorCode.INVALID_CALENDAR_ID));
+
         sharedCalendar.update(updateSharedCalendarRequestDTO);
         sharedCalendarRepository.save(sharedCalendar);
     }
@@ -96,7 +97,8 @@ public class SharedCalendarService {
     @Transactional
     public void deleteSharedCalendar(Long calendarId) {
         SharedCalendar sharedCalendar = sharedCalendarRepository.findById(calendarId)
-                        .orElseThrow(() -> new CustomException(SharedErrorCode.INVALID_CALENDAR_ID));
+                .orElseThrow(() -> new CustomException(SharedErrorCode.INVALID_CALENDAR_ID));
+
         userSharedCalendarRepository.deleteAllBySharedCalendar(sharedCalendar);
         if (userSharedCalendarRepository.existsBySharedCalendar(sharedCalendar)) {
             throw new CustomException(SharedErrorCode.CALENDAR_DELETE_FAILED);
@@ -106,40 +108,41 @@ public class SharedCalendarService {
         if (sharedCalendarRepository.existsById(calendarId)) {
             throw new CustomException(SharedErrorCode.CALENDAR_DELETE_FAILED);
         }
-
     }
 
     public SharedCalendarResponseDTO getSharedCalendar(Long calendarId) {
         SharedCalendar sharedCalendar = sharedCalendarRepository.findById(calendarId)
                 .orElseThrow(() -> new CustomException(SharedErrorCode.INVALID_CALENDAR_ID));
-        return SharedCalendarResponseDTO.from(sharedCalendar);
+
+        return SharedCalendarResponseDTO.create(sharedCalendar);
     }
 
-    public void invite(InviteSharedCalendarDTO inviteSharedCalendarDTO) {
-        if (inviteSharedCalendarDTO.getInvitingUsers().isEmpty()) {
+    @Transactional
+    public void invite(InviteSharedCalendarRequestDTO requestDTO) {
+        List<Long> invitingUsers = requestDTO.getInvitingUsers();
+
+        if (invitingUsers.isEmpty()) {
             return;
         }
-        SharedCalendar sharedCalendar = sharedCalendarRepository.findById(inviteSharedCalendarDTO.getCalendarId())
+
+        SharedCalendar sharedCalendar = sharedCalendarRepository.findById(requestDTO.getCalendarId())
                 .orElseThrow(() -> new CustomException(SharedErrorCode.INVALID_CALENDAR_ID));
 
-        for (UserDTO userDTO : inviteSharedCalendarDTO.getInvitingUsers()) {
-            User user = userRepository.findById(userDTO.getId()).get();
-            UserSharedCalendar userSharedCalendar = UserSharedCalendar.builder()
-                    .sharedCalendar(sharedCalendar)
-                    .user(user)
-                    .invitationStatus(false)
-                    .createdDate(LocalDate.now())
-                    .build();
-            userSharedCalendarRepository.save(userSharedCalendar);
-        }
+        invitingUsers
+                .stream()
+                .map(userService::findUserById)
+                .forEach((user) -> createUserSharedCalendar(user, sharedCalendar));
     }
 
-    public void reject(Long calendarId, SecurityUser securityUser) {
+    @Transactional
+    public void reject(Long calendarId, User user) {
         SharedCalendar sharedCalendar = sharedCalendarRepository.findById(calendarId)
                 .orElseThrow(() -> new CustomException(SharedErrorCode.INVALID_CALENDAR_ID));
+
         List<UserSharedCalendar> allBySharedCalendar = userSharedCalendarRepository.findAllBySharedCalendar(sharedCalendar);
+
         for (UserSharedCalendar userSharedCalendar : allBySharedCalendar) {
-            if (Objects.equals(userSharedCalendar.getUser().getId(), securityUser.getUser().getId())) {
+            if (Objects.equals(userSharedCalendar.getUser().getId(), user.getId())) {
                 if (userSharedCalendar.isInvitationStatus()) {
                     throw new CustomException(SharedErrorCode.ALREADY_ACCEPTED);
                 }
@@ -147,22 +150,21 @@ public class SharedCalendarService {
                 return;
             }
         }
+
         throw new CustomException(SharedErrorCode.INVITE_REJECT_FAILED);
-
-
     }
 
-    public void join(Long calendarId, SecurityUser securityUser) {
+    @Transactional
+    public void join(Long calendarId, User user) {
         SharedCalendar sharedCalendar = sharedCalendarRepository.findById(calendarId)
                 .orElseThrow(() -> new CustomException(SharedErrorCode.INVALID_CALENDAR_ID));
 
         List<UserSharedCalendar> allBySharedCalendar = userSharedCalendarRepository.findAllBySharedCalendar(sharedCalendar);
 
         for (UserSharedCalendar userSharedCalendar : allBySharedCalendar) {
-            if (userSharedCalendar.getUser().getId().equals(securityUser.getUser().getId())) {
+            if (userSharedCalendar.getUser().getId().equals(user.getId())) {
                 if (!userSharedCalendar.isInvitationStatus()) {
                     userSharedCalendar.setInvitationStatus(true);
-                    userSharedCalendarRepository.save(userSharedCalendar);
                     return;
                 } else {
                     throw new CustomException(SharedErrorCode.ALREADY_ACCEPTED);
@@ -171,14 +173,15 @@ public class SharedCalendarService {
         }
     }
 
-    public void leave(Long calendarId, SecurityUser securityUser) {
+    @Transactional
+    public void leave(Long calendarId, User user) {
         SharedCalendar sharedCalendar = sharedCalendarRepository.findById(calendarId)
                 .orElseThrow(() -> new CustomException(SharedErrorCode.INVALID_CALENDAR_ID));
 
         List<UserSharedCalendar> allBySharedCalendar = userSharedCalendarRepository.findAllBySharedCalendar(sharedCalendar);
 
         for (UserSharedCalendar userSharedCalendar : allBySharedCalendar) {
-            if (userSharedCalendar.getUser().getId().equals(securityUser.getUser().getId())) {
+            if (userSharedCalendar.getUser().getId().equals(user.getId())) {
                 userSharedCalendarRepository.delete(userSharedCalendar);
                 return;
             }
@@ -186,12 +189,12 @@ public class SharedCalendarService {
         throw new CustomException(SharedErrorCode.LEAVE_FAILED);
     }
 
-    public List<SharedCalendarResponseDTO> invitedSharedCalendarList(SecurityUser securityUser) {
-        List<UserSharedCalendar> allByUser = userSharedCalendarRepository.findAllByUser(securityUser.getUser());
+    public List<SharedCalendarResponseDTO> invitedSharedCalendarList(User user) {
+        List<UserSharedCalendar> allByUser = userSharedCalendarRepository.findAllByUser(user);
         List<SharedCalendarResponseDTO> response = new ArrayList<>();
         for (UserSharedCalendar userSharedCalendar : allByUser) {
             if (!userSharedCalendar.isInvitationStatus()) {
-                SharedCalendarResponseDTO dto = SharedCalendarResponseDTO.from(userSharedCalendar.getSharedCalendar());
+                SharedCalendarResponseDTO dto = SharedCalendarResponseDTO.create(userSharedCalendar.getSharedCalendar());
                 response.add(dto);
             }
         }
