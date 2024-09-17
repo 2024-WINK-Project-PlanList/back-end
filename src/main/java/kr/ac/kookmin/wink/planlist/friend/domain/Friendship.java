@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import lombok.*;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -19,20 +19,20 @@ public class Friendship {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "follower_id")
     private User follower;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "following_id")
     private User following;
 
-    @Column(name = "friend_status")
+    @Column(name = "friend_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private FriendStatus status;
 
-    @Column(name = "requested_at")
-    private Timestamp requestedAt;
+    @Column(name = "requested_at", nullable = false)
+    private LocalDateTime requestedAt;
 
     public User getAnotherOne(User standardUser) {
         return isFollower(standardUser) ? following : follower;

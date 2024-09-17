@@ -14,6 +14,7 @@ public class UserDTO {
     private String nickname;
     private String email;
     private String profileImagePath;
+    private String comment;
     private String songId;
 
     public static UserDTO create(User user) {
@@ -22,6 +23,7 @@ public class UserDTO {
                 .name(user.getName())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
+                .comment(user.getComment())
                 .profileImagePath(user.getProfileImagePath())
                 .songId(user.getSongId())
                 .build();

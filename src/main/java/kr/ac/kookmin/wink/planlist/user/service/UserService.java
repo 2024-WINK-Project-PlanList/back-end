@@ -44,6 +44,11 @@ public class UserService {
     private final FriendshipService friendshipService;
     private final IndividualCalendarService calendarService;
 
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.INVALID_USER_ID));
+    }
+
     @Transactional
     public void updateSong(SongRequestDTO requestDTO, User user) {
         user.setSongId(requestDTO.getSongId());
@@ -52,7 +57,10 @@ public class UserService {
     @Transactional
     public void changeUserProfile(ChangeProfileRequestDTO requestDTO, User user) {
         user.updateUserProfile(requestDTO.getNickname(), requestDTO.getSongId(), requestDTO.getComment());
-        uploadUserProfileImage(user, requestDTO.getProfileImage());
+
+        Optional<String> profileImageOptional = Optional.of(requestDTO.getProfileImage());
+
+        profileImageOptional.ifPresent(image -> uploadUserProfileImage(user, image));
     }
 
     private void uploadUserProfileImage(User user, String imageBase64) {
@@ -112,7 +120,7 @@ public class UserService {
 
         return UserDTO.create(user);
     }
-    
+
     @Transactional
     public RegisterResponseDTO getOrRegisterTempAccount(long currentTime) {
         String nickname = "테스트";

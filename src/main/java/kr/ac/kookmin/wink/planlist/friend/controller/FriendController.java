@@ -22,7 +22,7 @@ public class FriendController {
 
     @PostMapping
     public ResponseEntity<?> request(@RequestBody CreateFriendshipRequestDTO requestDTO) {
-        friendshipService.createFriendship(requestDTO, System.currentTimeMillis());
+        friendshipService.createFriendship(requestDTO);
 
         return ResponseEntity.ok().build();
     }

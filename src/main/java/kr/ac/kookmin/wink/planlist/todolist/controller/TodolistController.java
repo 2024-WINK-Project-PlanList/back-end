@@ -64,6 +64,5 @@ public class TodolistController {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).build();
 
         }
-
-        }
+    }
 }
