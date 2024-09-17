@@ -2,6 +2,8 @@ package kr.ac.kookmin.wink.planlist.shared.calendar.service;
 
 import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
 import kr.ac.kookmin.wink.planlist.global.s3.S3Service;
+import kr.ac.kookmin.wink.planlist.notification.aop.Notify;
+import kr.ac.kookmin.wink.planlist.notification.domain.NotificationMessage;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.SharedCalendar;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.UserSharedCalendar;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.request.CreateSharedCalendarRequestDTO;
@@ -42,8 +44,9 @@ public class SharedCalendarService {
                 .toList();
     }
 
+    @Notify(NotificationMessage.CALENDAR_INVITATION)
     @Transactional
-    public void createSharedCalendar(CreateSharedCalendarRequestDTO requestDTO, User user) {
+    public List<UserSharedCalendar> createSharedCalendar(CreateSharedCalendarRequestDTO requestDTO, User user) {
         SharedCalendar sharedCalendar = SharedCalendar.builder()
                 .name(requestDTO.getName())
                 .description(requestDTO.getDescription())
@@ -65,24 +68,21 @@ public class SharedCalendarService {
 
         List<Long> membersToInvite = requestDTO.getMembersToInvite();
 
-        if (membersToInvite == null || membersToInvite.isEmpty()) {
-            return;
-        }
-
-        membersToInvite
+        return membersToInvite
                 .stream()
                 .map(userService::findUserById)
-                .forEach((toInvite) -> createUserSharedCalendar(toInvite, sharedCalendar));
+                .map((toInvite) -> createUserSharedCalendar(toInvite, sharedCalendar))
+                .toList();
     }
 
-    private void createUserSharedCalendar(User user, SharedCalendar sharedCalendar) {
+    private UserSharedCalendar createUserSharedCalendar(User user, SharedCalendar sharedCalendar) {
         UserSharedCalendar userSharedCalendar1 = UserSharedCalendar.builder()
                 .user(user)
                 .sharedCalendar(sharedCalendar)
                 .invitationStatus(false)
                 .build();
 
-        userSharedCalendarRepository.save(userSharedCalendar1);
+        return userSharedCalendarRepository.save(userSharedCalendar1);
     }
 
     @Transactional
@@ -117,21 +117,19 @@ public class SharedCalendarService {
         return SharedCalendarResponseDTO.create(sharedCalendar);
     }
 
+    @Notify(NotificationMessage.CALENDAR_INVITATION)
     @Transactional
-    public void invite(InviteSharedCalendarRequestDTO requestDTO) {
+    public List<UserSharedCalendar> invite(InviteSharedCalendarRequestDTO requestDTO) {
         List<Long> invitingUsers = requestDTO.getInvitingUsers();
-
-        if (invitingUsers.isEmpty()) {
-            return;
-        }
 
         SharedCalendar sharedCalendar = sharedCalendarRepository.findById(requestDTO.getCalendarId())
                 .orElseThrow(() -> new CustomException(SharedErrorCode.INVALID_CALENDAR_ID));
 
-        invitingUsers
+        return invitingUsers
                 .stream()
                 .map(userService::findUserById)
-                .forEach((user) -> createUserSharedCalendar(user, sharedCalendar));
+                .map((user) -> createUserSharedCalendar(user, sharedCalendar))
+                .toList();
     }
 
     @Transactional
@@ -154,8 +152,9 @@ public class SharedCalendarService {
         throw new CustomException(SharedErrorCode.INVITE_REJECT_FAILED);
     }
 
+    @Notify(NotificationMessage.CALENDAR_ACCEPTED)
     @Transactional
-    public void join(Long calendarId, User user) {
+    public UserSharedCalendar join(Long calendarId, User user) {
         SharedCalendar sharedCalendar = sharedCalendarRepository.findById(calendarId)
                 .orElseThrow(() -> new CustomException(SharedErrorCode.INVALID_CALENDAR_ID));
 
@@ -165,12 +164,14 @@ public class SharedCalendarService {
             if (userSharedCalendar.getUser().getId().equals(user.getId())) {
                 if (!userSharedCalendar.isInvitationStatus()) {
                     userSharedCalendar.setInvitationStatus(true);
-                    return;
+                    return userSharedCalendar;
                 } else {
                     throw new CustomException(SharedErrorCode.ALREADY_ACCEPTED);
                 }
             }
         }
+
+        return null;
     }
 
     @Transactional
