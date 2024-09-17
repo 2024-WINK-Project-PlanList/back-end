@@ -34,6 +34,11 @@ public class SharedCalendarService {
     private final UserService userService;
     private final S3Service s3Service;
 
+    public SharedCalendar findById(Long id) {
+        return sharedCalendarRepository.findById(id)
+                .orElseThrow(() -> new CustomException(SharedErrorCode.INVALID_CALENDAR_ID));
+    }
+
     public List<SharedCalendarResponseDTO> getMySharedCalendars(User user) {
         return userSharedCalendarRepository.findAllByUser(user)
                 .stream()
@@ -151,6 +156,8 @@ public class SharedCalendarService {
 
         throw new CustomException(SharedErrorCode.INVITE_REJECT_FAILED);
     }
+
+
 
     @Notify(NotificationMessage.CALENDAR_ACCEPTED)
     @Transactional

@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum NotificationMessage {
     WELCOME(
             "Planlist에 오신 걸 환영합니다",
-            "%s님의 하루를 연주해보세요",
+            "%s님의 하루를 연주해보세요!",
             NotificationType.NORMAL,
             null
     ),
@@ -20,7 +20,7 @@ public enum NotificationMessage {
     ),
     CALENDAR_INVITATION(
             "공유 캘린더 초대가 왔어요",
-            "%s님이 [%s]에 초대했어요",
+            "%s님이 당신을 [%s]에 초대했어요.",
             NotificationType.INVITATION,
             null
     ),
@@ -32,23 +32,17 @@ public enum NotificationMessage {
     ),
     CALENDAR_NEW_SCHEDULE(
             "새로운 일정이 추가되었어요",
-            "%s님이 %s님을 [%s] \"%s\" 일정에 추가했어요",
-            NotificationType.NORMAL,
-            "/calendar/%d"
-    ),
-    CALENDAR_UPDATE(
-            "[%s]의 정보가 업데이트되었어요",
-            "공유 캘린더 [%s]의 정보를 확인해보세요",
+            "%s님이 당신을 [%s] \"%s\" 일정에 추가했어요.",
             NotificationType.NORMAL,
             "/calendar/%d"
     ),
     CALENDAR_ACCEPTED(
-            "",
-            "",
+            "이제 [%s] 캘린더의 멤버가 되었어요",
+            "클릭해서 공유캘린더를 확인해보세요.",
             NotificationType.NORMAL,
             "/calendar/%d"
     ),
-    CALENDAR_REJECTED(
+    FRIEND_REJECTED(
             "",
             "",
             NotificationType.NORMAL,

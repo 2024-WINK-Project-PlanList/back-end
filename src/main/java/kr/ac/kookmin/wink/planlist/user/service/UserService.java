@@ -8,6 +8,8 @@ import kr.ac.kookmin.wink.planlist.global.jwt.TokenProvider;
 import kr.ac.kookmin.wink.planlist.global.s3.S3Service;
 import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
 import kr.ac.kookmin.wink.planlist.individual.calendar.service.IndividualCalendarService;
+import kr.ac.kookmin.wink.planlist.notification.aop.Notify;
+import kr.ac.kookmin.wink.planlist.notification.domain.NotificationMessage;
 import kr.ac.kookmin.wink.planlist.user.domain.KakaoUserInfo;
 import kr.ac.kookmin.wink.planlist.user.domain.LoginType;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
@@ -84,6 +86,7 @@ public class UserService {
                 .build();
     }
 
+    @Notify(NotificationMessage.WELCOME)
     @Transactional
     public RegisterResponseDTO register(RegisterRequestDTO registerRequestDTO, long currentTime) {
         String kakaoAccessToken = registerRequestDTO.getKakaoAccessToken();

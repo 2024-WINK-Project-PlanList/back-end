@@ -9,6 +9,8 @@ import kr.ac.kookmin.wink.planlist.friend.dto.response.UserFriendsResponseDTO;
 import kr.ac.kookmin.wink.planlist.friend.exception.FriendErrorCode;
 import kr.ac.kookmin.wink.planlist.friend.repository.FriendshipRepository;
 import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
+import kr.ac.kookmin.wink.planlist.notification.aop.Notify;
+import kr.ac.kookmin.wink.planlist.notification.domain.NotificationMessage;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
@@ -54,15 +56,6 @@ public class FriendshipService {
         return friendships;
     }
 
-    public List<Friendship> findAllWaitingFriendshipsByUser(Long userId, boolean isFollower) {
-        User standardUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_USER_ID));
-
-        return (isFollower) ?
-                friendshipRepository.findAllByFollower(standardUser) :
-                friendshipRepository.findAllByFollowing(standardUser);
-    }
-
     //TODO: 친구 이메일 검색 구현
     public List<SearchUserResponseDTO> findAllUsersBySearch(User user, String keyword, boolean onlyFriends) {
         List<UserDTO> allFriendsByUser = findAllFriendsByUser(user)
@@ -83,14 +76,19 @@ public class FriendshipService {
                     .map(UserDTO::create)
                     .toList();
 
+            List<String> friendEmails = allFriendsByUser
+                    .stream()
+                    .map(UserDTO::getEmail)
+                    .toList();
+
             return searchResults
                     .stream()
-                    .map((result) -> new SearchUserResponseDTO(result, allFriendsByUser.contains(result)))
+                    .map((result) -> new SearchUserResponseDTO(result, friendEmails.contains(result.getEmail())))
                     .toList();
         }
     }
 
-    //@Notify(NotificationMessage.FRIEND_REQUEST)
+    @Notify(NotificationMessage.FRIEND_REQUEST)
     @Transactional
     public Friendship createFriendship(CreateFriendshipRequestDTO requestDTO) {
         Long followerId = requestDTO.getFollowerId();
@@ -110,7 +108,7 @@ public class FriendshipService {
         return friendshipRepository.save(friendship);
     }
 
-    //@Notify(NotificationMessage.FRIEND_ACCEPTED)
+    @Notify(NotificationMessage.FRIEND_ACCEPTED)
     @Transactional
     public Friendship accept(AcceptFriendRequestDTO requestDTO) {
         Friendship friendship = findById(requestDTO.getFriendshipId());

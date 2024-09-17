@@ -1,9 +1,13 @@
 package kr.ac.kookmin.wink.planlist.notification.aop;
 
+import kr.ac.kookmin.wink.planlist.friend.domain.FriendStatus;
 import kr.ac.kookmin.wink.planlist.friend.domain.Friendship;
+import kr.ac.kookmin.wink.planlist.friend.service.FriendshipService;
+import kr.ac.kookmin.wink.planlist.notification.domain.Notification;
 import kr.ac.kookmin.wink.planlist.notification.domain.NotificationMessage;
 import kr.ac.kookmin.wink.planlist.notification.service.NotificationService;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.UserSharedCalendar;
+import kr.ac.kookmin.wink.planlist.shared.schedule.domain.UserSharedSchedule;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.dto.response.RegisterResponseDTO;
 import kr.ac.kookmin.wink.planlist.user.service.UserService;
@@ -11,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -22,6 +28,7 @@ import java.util.List;
 public class NotificationAspect {
     private final NotificationService notificationService;
     private final UserService userService;
+    private final FriendshipService friendshipService;
 
     @AfterReturning(value = "@annotation(kr.ac.kookmin.wink.planlist.notification.aop.Notify)", returning = "registerResponseDTO")
     public void notifyWelcome(JoinPoint joinPoint, RegisterResponseDTO registerResponseDTO) {
@@ -45,6 +52,38 @@ public class NotificationAspect {
         }
     }
 
+    @Pointcut("execution(* kr.ac.kookmin.wink.planlist.friend.service.FriendshipService.delete(..)) && args(friendshipId)")
+    public void friendshipDeletePointcut(Long friendshipId) {}
+
+    @Before("friendshipDeletePointcut(friendshipId)")
+    public void handleFriendshipDelete(JoinPoint joinPoint, Long friendshipId) {
+        Friendship friendship = friendshipService.findById(friendshipId);
+
+        // 친구 관계 상태가 WAITING일 때만 알림 삭제 로직 수행
+        if (friendship.getStatus() == FriendStatus.WAITING) {
+            // 알림 조회
+            Notification notification = notificationService.findByMessageType(
+                    NotificationMessage.FRIEND_REQUEST,
+                    friendshipId,
+                    friendship.getFollowing()
+            );
+
+            // 알림 삭제
+            notificationService.deleteNotification(notification);
+        }
+    }
+
+    @Pointcut("execution(* kr.ac.kookmin.wink.planlist.shared.calendar.repository.UserSharedCalendarRepository.delete(..)) && args(userSharedCalendar)")
+    public void calendarRejectPointcut(UserSharedCalendar userSharedCalendar) {}
+
+    @Before("calendarRejectPointcut(userSharedCalendar)")
+    public void handleCalendarRejectNotification(JoinPoint joinPoint, UserSharedCalendar userSharedCalendar) {
+        // 삭제 전에 알림 처리
+        if (userSharedCalendar.isInvitationStatus()) return;
+
+        notificationService.handleCalendarRejected(userSharedCalendar);
+    }
+
     @AfterReturning(value = "@annotation(kr.ac.kookmin.wink.planlist.notification.aop.Notify)", returning = "userSharedCalendars")
     public void notifyCalendarInvitation(JoinPoint joinPoint, List<UserSharedCalendar> userSharedCalendars) {
         userSharedCalendars.forEach(notificationService::handleCalendarInvitation);
@@ -52,7 +91,16 @@ public class NotificationAspect {
 
     @AfterReturning(value = "@annotation(kr.ac.kookmin.wink.planlist.notification.aop.Notify)", returning = "userSharedCalendar")
     public void notifyCalendarAccepted(JoinPoint joinPoint, UserSharedCalendar userSharedCalendar) {
+        if (userSharedCalendar == null) {
+            return;
+        }
+
         notificationService.handleCalendarAccepted(userSharedCalendar);
+    }
+
+    @AfterReturning(value = "@annotation(kr.ac.kookmin.wink.planlist.notification.aop.Notify)", returning = "userSharedSchedules")
+    public void notifyCalendarNewSchedule(JoinPoint joinPoint, List<UserSharedSchedule> userSharedSchedules) {
+        userSharedSchedules.forEach(notificationService::handleNewSharedSchedule);
     }
 
     private Notify getAnnotation(JoinPoint joinPoint) {

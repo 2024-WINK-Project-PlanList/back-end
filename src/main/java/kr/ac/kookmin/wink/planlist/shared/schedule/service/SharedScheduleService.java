@@ -1,6 +1,8 @@
 package kr.ac.kookmin.wink.planlist.shared.schedule.service;
 
 import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
+import kr.ac.kookmin.wink.planlist.notification.aop.Notify;
+import kr.ac.kookmin.wink.planlist.notification.domain.NotificationMessage;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.SharedCalendar;
 import kr.ac.kookmin.wink.planlist.shared.calendar.repository.SharedCalendarRepository;
 import kr.ac.kookmin.wink.planlist.shared.exeption.SharedErrorCode;
@@ -8,11 +10,11 @@ import kr.ac.kookmin.wink.planlist.shared.schedule.domain.SharedSchedule;
 import kr.ac.kookmin.wink.planlist.shared.schedule.domain.UserSharedSchedule;
 import kr.ac.kookmin.wink.planlist.shared.schedule.dto.SharedScheduleRequestDTO;
 import kr.ac.kookmin.wink.planlist.shared.schedule.dto.SharedScheduleResponseDTO;
-import kr.ac.kookmin.wink.planlist.shared.schedule.repository.UserSharedScheduleRepository;
 import kr.ac.kookmin.wink.planlist.shared.schedule.repository.SharedScheduleRepository;
+import kr.ac.kookmin.wink.planlist.shared.schedule.repository.UserSharedScheduleRepository;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
-import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
+import kr.ac.kookmin.wink.planlist.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,18 +30,19 @@ public class SharedScheduleService {
     private final SharedScheduleRepository sharedScheduleRepository;
     private final UserSharedScheduleRepository userSharedScheduleRepository;
     private final SharedCalendarRepository sharedCalendarRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
+    @Notify(NotificationMessage.CALENDAR_NEW_SCHEDULE)
     @Transactional
-    public void createSharedSchedule(SharedScheduleRequestDTO requestDTO) {
+    public List<UserSharedSchedule> createSharedSchedule(SharedScheduleRequestDTO requestDTO) {
         SharedCalendar sharedCalendar = sharedCalendarRepository.findById(requestDTO.getCalendarId())
                 .orElseThrow(() -> new CustomException(SharedErrorCode.INVALID_CALENDAR_ID));
 
         SharedSchedule sharedSchedule = SharedSchedule.create(requestDTO, sharedCalendar);
         sharedScheduleRepository.save(sharedSchedule);
 
-        List<UserSharedSchedule> list = requestDTO.getScheduleMembers().stream()
-                .map(id -> userRepository.findById(id).get())
+        return requestDTO.getScheduleMembers().stream()
+                .map(userService::findUserById)
                 .toList().stream()
                 .map(user -> userSharedScheduleRepository.save(new UserSharedSchedule(user, sharedSchedule)))
                 .toList();
@@ -64,8 +67,8 @@ public class SharedScheduleService {
                             )
                 )
                 .toList();
-
     }
+
 
     @Transactional
     public void updateSharedSchedule(Long scheduleId, SharedScheduleRequestDTO requestDTO) {
@@ -83,16 +86,15 @@ public class SharedScheduleService {
         List<Long> list = requestDTO.getScheduleMembers().stream()
                 .peek(id -> {
                     if (!scheduleMemberIdList.contains(id)) {
-                        User user = userRepository.findById(id).get();
+                        User user = userService.findUserById(id);
                         userSharedScheduleRepository.save(new UserSharedSchedule(user, sharedSchedule));
-
                     }
                 })
                 .toList();
         List<Long> list1 = scheduleMemberIdList.stream()
                 .peek(id -> {
                     if (!requestDTO.getScheduleMembers().contains(id)) {
-                        userSharedScheduleRepository.deleteByUser(userRepository.findById(id).get());
+                        userSharedScheduleRepository.deleteByUser(userService.findUserById(id));
                     }
                 })
                 .toList();
@@ -100,7 +102,6 @@ public class SharedScheduleService {
         //일정 내용 업데이트
         sharedSchedule.update(requestDTO, sharedCalendar);
         sharedScheduleRepository.save(sharedSchedule);
-
     }
 
     @Transactional
@@ -110,8 +111,6 @@ public class SharedScheduleService {
 
         userSharedScheduleRepository.deleteAllBySharedSchedule(sharedSchedule);
         sharedScheduleRepository.delete(sharedSchedule);
-
-
     }
 
 

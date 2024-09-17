@@ -8,7 +8,10 @@ import kr.ac.kookmin.wink.planlist.notification.domain.NotificationMessage;
 import kr.ac.kookmin.wink.planlist.notification.dto.NotificationDTO;
 import kr.ac.kookmin.wink.planlist.notification.exception.NotificationErrorCode;
 import kr.ac.kookmin.wink.planlist.notification.repository.NotificationRepository;
+import kr.ac.kookmin.wink.planlist.shared.calendar.domain.SharedCalendar;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.UserSharedCalendar;
+import kr.ac.kookmin.wink.planlist.shared.calendar.service.SharedCalendarService;
+import kr.ac.kookmin.wink.planlist.shared.schedule.domain.UserSharedSchedule;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,13 @@ import java.util.List;
 public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final FriendshipService friendshipService;
+    private final SharedCalendarService sharedCalendarService;
+
+    public Notification findByMessageType(NotificationMessage message, Long referenceId, User user) {
+        return notificationRepository.findByMessageType(message, referenceId, user)
+                .orElseThrow(() -> new CustomException(NotificationErrorCode.NOT_FOUND));
+    }
+
 
     @Transactional
     public void sendNotification(User user, NotificationMessage message, Long referenceId) {
@@ -54,6 +64,12 @@ public class NotificationService {
     }
 
     @Transactional
+    public void handleNewSharedSchedule(UserSharedSchedule userSharedSchedule) {
+        Long calendarId = userSharedSchedule.getSharedSchedule().getSharedCalendar().getId();
+        sendNotification(userSharedSchedule.getUser(), NotificationMessage.CALENDAR_NEW_SCHEDULE, calendarId);
+    }
+
+    @Transactional
     public void handleCalendarInvitation(UserSharedCalendar calendar) {
         sendNotification(calendar.getUser(), NotificationMessage.CALENDAR_INVITATION, calendar.getSharedCalendar().getId());
     }
@@ -67,6 +83,15 @@ public class NotificationService {
         if (deleteNotification(invited)) {
             sendNotification(calendar.getUser(), NotificationMessage.CALENDAR_ACCEPTED, calendarId);
         }
+    }
+
+    @Transactional
+    public void handleCalendarRejected(UserSharedCalendar calendar) {
+        Long calendarId = calendar.getSharedCalendar().getId();
+        Notification invited = notificationRepository.findByMessageType(NotificationMessage.CALENDAR_INVITATION, calendarId, calendar.getUser())
+                .orElseThrow(() -> new CustomException(NotificationErrorCode.CALENDAR_INVITATION_NOT_FOUND));
+
+        deleteNotification(invited);
     }
 
     @Transactional
@@ -95,6 +120,20 @@ public class NotificationService {
     }
 
     public String getImagePath(Notification notification) {
+        NotificationMessage message = notification.getMessage();
+        Long referenceId = notification.getReferenceId();
+
+        if (message == NotificationMessage.FRIEND_REQUEST) {
+            Friendship friendship = friendshipService.findById(referenceId);
+
+            return friendship.getFollower().getProfileImagePath();
+        } else if (message == NotificationMessage.CALENDAR_INVITATION
+                || message == NotificationMessage.CALENDAR_ACCEPTED) {
+            SharedCalendar sharedCalendar = sharedCalendarService.findById(referenceId);
+
+            return sharedCalendar.getCalendarImagePath();
+        }
+
         return null;
     }
 
