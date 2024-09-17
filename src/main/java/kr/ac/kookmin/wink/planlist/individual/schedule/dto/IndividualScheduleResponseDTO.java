@@ -15,7 +15,8 @@ import java.util.List;
 @Getter
 public class IndividualScheduleResponseDTO {
     private Long id;
-    private String content;
+    private String name;
+    private String description;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private ScheduleOpenStatus openStatus;
@@ -31,7 +32,8 @@ public class IndividualScheduleResponseDTO {
 
         return IndividualScheduleResponseDTO.builder()
                 .id(schedule.getId())
-                .content(schedule.getContent())
+                .name(schedule.getName())
+                .description(schedule.getDescription())
                 .startDate(schedule.getStartDate())
                 .endDate(schedule.getEndDate())
                 .openStatus(schedule.getOpenStatus())

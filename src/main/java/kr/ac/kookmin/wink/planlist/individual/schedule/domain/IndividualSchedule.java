@@ -24,8 +24,13 @@ public class IndividualSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "content")
-    private String content;
+    // todo: name으로
+    @Column(name = "name")
+    private String name;
+
+    // todo: 상세(또는 장소)
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
@@ -52,7 +57,8 @@ public class IndividualSchedule {
     private IndividualCalendar individualCalendar;
 
     public IndividualSchedule updateSchedule(IndividualScheduleRequestDTO individualScheduleRequestDTO, List<User> scheduleMemberList) {
-        this.content = individualScheduleRequestDTO.getContent();
+        this.name = individualScheduleRequestDTO.getName();
+        this.description = individualScheduleRequestDTO.getDescription();
         this.startDate = individualScheduleRequestDTO.getStartDate();
         this.endDate = individualScheduleRequestDTO.getEndDate();
         this.openStatus = individualScheduleRequestDTO.getOpenStatus();
