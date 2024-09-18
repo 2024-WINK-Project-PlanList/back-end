@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,8 +18,11 @@ public class UserController {
     private final UserService userService;
 
     @PatchMapping("/me")
-    public ResponseEntity<?> changeUserProfile(@RequestBody ChangeProfileRequestDTO requestDTO, @AuthenticationPrincipal SecurityUser securityUser) {
-        userService.changeUserProfile(requestDTO, securityUser.getUser());
+    public ResponseEntity<?> changeUserProfile(
+            @RequestPart ChangeProfileRequestDTO requestDTO,
+            @RequestPart(required = false) MultipartFile profileImage,
+            @AuthenticationPrincipal SecurityUser securityUser) {
+        userService.changeUserProfile(requestDTO, profileImage, securityUser.getUser().getId());
         return ResponseEntity.ok().build();
     }
 
@@ -29,7 +33,7 @@ public class UserController {
 
     @PatchMapping("/me/song")
     public ResponseEntity<?> updateSong(@RequestBody SongRequestDTO requestDTO, @AuthenticationPrincipal SecurityUser securityUser) {
-        userService.updateSong(requestDTO, securityUser.getUser());
+        userService.updateSong(requestDTO, securityUser.getUser().getId());
         return ResponseEntity.ok().build();
     }
 }

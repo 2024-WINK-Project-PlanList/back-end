@@ -18,6 +18,7 @@ import kr.ac.kookmin.wink.planlist.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,17 +52,16 @@ public class SharedCalendarService {
 
     @Notify(NotificationMessage.CALENDAR_INVITATION)
     @Transactional
-    public List<UserSharedCalendar> createSharedCalendar(CreateSharedCalendarRequestDTO requestDTO, User user) {
+    public List<UserSharedCalendar> createSharedCalendar(CreateSharedCalendarRequestDTO requestDTO, MultipartFile image, User user) {
         SharedCalendar sharedCalendar = SharedCalendar.builder()
                 .name(requestDTO.getName())
                 .description(requestDTO.getDescription())
                 .build();
 
         String randomName = UUID.randomUUID().toString();
-        String imageBase64 = requestDTO.getImageBase64();
 
-        if (imageBase64 != null) {
-            String imagePath = s3Service.uploadBase64Image(imageBase64, "profile/calendar/", randomName);
+        if (image != null && !image.isEmpty()) {
+            String imagePath = s3Service.uploadImageFile(image, "profile/calendar/" + randomName);
 
             sharedCalendar.setCalendarImagePath(imagePath);
         }
@@ -85,7 +85,8 @@ public class SharedCalendarService {
                 .toList();
     }
 
-    private UserSharedCalendar createUserSharedCalendar(User user, SharedCalendar sharedCalendar) {
+    @Transactional
+    public UserSharedCalendar createUserSharedCalendar(User user, SharedCalendar sharedCalendar) {
         UserSharedCalendar userSharedCalendar1 = UserSharedCalendar.builder()
                 .user(user)
                 .sharedCalendar(sharedCalendar)

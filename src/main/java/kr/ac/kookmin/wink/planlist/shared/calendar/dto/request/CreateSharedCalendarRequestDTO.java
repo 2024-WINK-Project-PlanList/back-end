@@ -10,6 +10,5 @@ import java.util.List;
 public class CreateSharedCalendarRequestDTO {
     private String name;
     private String description;
-    private String imageBase64;
     private List<Long> membersToInvite;
 }

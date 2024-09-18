@@ -21,7 +21,7 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    private String uploadImageFile(MultipartFile imageFile, String newFileName) {
+    public String uploadImageFile(MultipartFile imageFile, String newFileName) {
         String originalName = imageFile.getOriginalFilename();
         String ext = originalName.substring(originalName.lastIndexOf("."));
         String changedName = newFileName + ext;

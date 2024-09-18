@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,8 +31,12 @@ public class SharedCalendarController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createSharedCalendar(@RequestBody CreateSharedCalendarRequestDTO requestDTO, @AuthenticationPrincipal SecurityUser securityUser) {
-        sharedCalendarService.createSharedCalendar(requestDTO, securityUser.getUser());
+    public ResponseEntity<?> createSharedCalendar(
+            @RequestPart CreateSharedCalendarRequestDTO requestDTO,
+            @RequestPart(required = false) MultipartFile image,
+            @AuthenticationPrincipal SecurityUser securityUser
+    ) {
+        sharedCalendarService.createSharedCalendar(requestDTO, image, securityUser.getUser());
         return ResponseEntity.ok().build();
     }
 
