@@ -31,6 +31,9 @@ public class Todolist {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private LocalDateTime date;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

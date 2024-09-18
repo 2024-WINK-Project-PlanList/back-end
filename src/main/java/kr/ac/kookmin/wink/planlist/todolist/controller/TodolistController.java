@@ -6,7 +6,7 @@ import kr.ac.kookmin.wink.planlist.todolist.dto.TodolistDTO;
 import kr.ac.kookmin.wink.planlist.todolist.dto.request.CreateTodolistRequestDTO;
 import kr.ac.kookmin.wink.planlist.todolist.dto.request.UpdateTodolistRequestDTO;
 import kr.ac.kookmin.wink.planlist.todolist.service.TodolistService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/todolist")
+@RequiredArgsConstructor
 public class TodolistController {
 
     private final TodolistService todolistService;
-
-    @Autowired
-    public TodolistController(TodolistService todolistService) {
-        this.todolistService = todolistService;
-    }
 
     // 할 일 생성
     @PostMapping("/tasks")

@@ -82,6 +82,7 @@ public class TodolistService {
         return Todolist.builder()
                 .content(requestDTO.getContent())
                 .user(user)
+                .date(requestDTO.getDate())
                 .build();
     }
 }
