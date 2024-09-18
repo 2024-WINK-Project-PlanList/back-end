@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserSharedCalendarRepository extends JpaRepository<UserSharedCalendar, UserSharedCalendarId> {
+public interface UserSharedCalendarRepository extends JpaRepository<UserSharedCalendar, Long> {
     List<UserSharedCalendar> findAllByUser(User user);
 
     void deleteAllBySharedCalendar(SharedCalendar sharedCalendar);

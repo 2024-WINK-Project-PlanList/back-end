@@ -6,6 +6,7 @@ import kr.ac.kookmin.wink.planlist.notification.aop.Notify;
 import kr.ac.kookmin.wink.planlist.notification.domain.NotificationMessage;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.SharedCalendar;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.UserSharedCalendar;
+import kr.ac.kookmin.wink.planlist.shared.calendar.domain.UserSharedCalendarId;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.request.CreateSharedCalendarRequestDTO;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.request.InviteSharedCalendarRequestDTO;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.request.UpdateSharedCalendarRequestDTO;
@@ -66,11 +67,11 @@ public class SharedCalendarService {
             sharedCalendar.setCalendarImagePath(imagePath);
         }
 
-        sharedCalendarRepository.save(sharedCalendar);
+        SharedCalendar newSharedCalendar = sharedCalendarRepository.save(sharedCalendar);
 
         UserSharedCalendar userSharedCalendar = UserSharedCalendar.builder()
                 .user(user)
-                .sharedCalendar(sharedCalendar)
+                .sharedCalendar(newSharedCalendar)
                 .invitationStatus(true)
                 .build();
 
@@ -81,7 +82,7 @@ public class SharedCalendarService {
         return membersToInvite
                 .stream()
                 .map(userService::findUserById)
-                .map((toInvite) -> createUserSharedCalendar(toInvite, sharedCalendar))
+                .map((toInvite) -> createUserSharedCalendar(toInvite, newSharedCalendar))
                 .toList();
     }
 

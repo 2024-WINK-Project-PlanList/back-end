@@ -18,17 +18,18 @@ import java.time.LocalDateTime;
 @Table(name = "user_shared_calendar")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class UserSharedCalendar implements Persistable<UserSharedCalendarId> {
+public class UserSharedCalendar{
 
-    @EmbeddedId
-    private UserSharedCalendarId id = new UserSharedCalendarId();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @MapsId("sharedCalendarId")
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shared_calendar")
     private SharedCalendar sharedCalendar;
 
     @ColumnDefault("false")
@@ -38,14 +39,4 @@ public class UserSharedCalendar implements Persistable<UserSharedCalendarId> {
     @CreatedDate
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
-
-    @Override
-    public UserSharedCalendarId getId() {
-        return id;
-    }
-
-    @Override
-    public boolean isNew() {
-        return createdDate == null;
-    }
 }

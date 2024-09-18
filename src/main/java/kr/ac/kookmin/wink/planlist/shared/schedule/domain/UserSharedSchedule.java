@@ -24,10 +24,12 @@ public class UserSharedSchedule implements Persistable<UserSharedScheduleId> {
 
     @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @MapsId("sharedScheduleId")
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shared_schedule_id")
     private SharedSchedule sharedSchedule;
 
     @CreatedDate

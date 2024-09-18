@@ -1,6 +1,5 @@
 package kr.ac.kookmin.wink.planlist.shared.calendar.domain;
 
-import com.drew.lang.annotations.NotNull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
@@ -16,10 +15,8 @@ import java.io.Serializable;
 public class UserSharedCalendarId implements Serializable {
 
     @Column(name = "user_id")
-    @NotNull
-    private Long userId;
+    private long userId;
 
     @Column(name = "shared_calendar_id")
-    @NotNull
-    private Long sharedCalendarId;
+    private long sharedCalendarId;
 }
