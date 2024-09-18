@@ -3,9 +3,7 @@ package kr.ac.kookmin.wink.planlist.shared.schedule.domain;
 import com.drew.lang.annotations.NotNull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -13,6 +11,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@Setter
+@Getter
 public class UserSharedScheduleId implements Serializable {
 
     @Column(name = "user_id")
