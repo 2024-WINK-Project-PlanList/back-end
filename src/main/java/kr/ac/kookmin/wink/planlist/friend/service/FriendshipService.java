@@ -40,6 +40,7 @@ public class FriendshipService {
 
         return getUserFriendships(standardUser)
                 .stream()
+                .filter(f -> f.getStatus() == FriendStatus.FRIEND)
                 .map((friendship) -> new UserFriendsResponseDTO(friendship, standardUser))
                 .toList();
     }

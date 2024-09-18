@@ -31,7 +31,7 @@ public class IndividualScheduleService {
         IndividualCalendar individualCalendar = individualCalendarRepository.findById(individualScheduleRequestDTO.getCalendarId())
                         .orElseThrow(() -> new CustomException(IndividualErrorCode.INVALID_CALENDAR_ID));
         List<User> scheduleMemberList = new ArrayList<>();
-        for(Long userId:individualScheduleRequestDTO.getScheduleMembers()) {
+        for(Long userId : individualScheduleRequestDTO.getScheduleMembers()) {
             scheduleMemberList.add(userRepository.findById(userId)
                     .orElseThrow(() -> new CustomException(IndividualErrorCode.INVALID_USER_ID)));
         }
