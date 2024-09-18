@@ -1,7 +1,6 @@
 package kr.ac.kookmin.wink.planlist.global.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
@@ -29,11 +28,11 @@ public class S3Service {
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType("image/" + ext);
+        metadata.setContentLength(imageFile.getSize());
 
         try {
             amazonS3.putObject(
                     new PutObjectRequest(bucket, changedName, imageFile.getInputStream(), metadata)
-                            .withCannedAcl(CannedAccessControlList.PublicRead)
             );
         } catch (IOException e) {
             throw new CustomException(GlobalErrorCode.FILE_UPLOAD_FAILED, e);
@@ -43,6 +42,6 @@ public class S3Service {
     }
 
     public String uploadBase64Image(String imageBase64, String directory, String newFileName) {
-        return uploadImageFile(ImageUtil.base64ToMultipartFile(imageBase64, newFileName), directory + newFileName);
+        return uploadImageFile(ImageUtil.base64ToMultipartFile(newFileName, imageBase64), directory + newFileName);
     }
 }

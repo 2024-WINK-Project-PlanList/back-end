@@ -13,7 +13,8 @@ public enum SharedErrorCode implements ErrorCode {
     CALENDAR_DELETE_FAILED("캘린더 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     INVITE_REJECT_FAILED("캘린더 초대 거절에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     ALREADY_ACCEPTED("이미 참여중인 캘린더입니다.", HttpStatus.BAD_REQUEST),
-    LEAVE_FAILED("캘린더 탈퇴 실패", HttpStatus.INTERNAL_SERVER_ERROR),;
+    LEAVE_FAILED("캘린더 탈퇴 실패", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_SCHEDULE_ID("잘못된 스케쥴 아이디", HttpStatus.BAD_REQUEST),;
 
     private final String message;
     private final HttpStatus httpStatus;

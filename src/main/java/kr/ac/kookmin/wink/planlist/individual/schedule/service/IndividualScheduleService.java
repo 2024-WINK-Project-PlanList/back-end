@@ -34,7 +34,8 @@ public class IndividualScheduleService {
         }
 
         IndividualSchedule schedule = IndividualSchedule.builder()
-                .content(individualScheduleRequestDTO.getContent())
+                .name(individualScheduleRequestDTO.getName())
+                .description(individualScheduleRequestDTO.getDescription())
                 .startDate(individualScheduleRequestDTO.getStartDate())
                 .endDate(individualScheduleRequestDTO.getEndDate())
                 .openStatus(individualScheduleRequestDTO.getOpenStatus())

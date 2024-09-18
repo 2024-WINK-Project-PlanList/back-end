@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "\"individual_calendar\"")
+@Table(name = "individual_calendar")
 @Entity
 public class IndividualCalendar {
 
@@ -22,7 +22,7 @@ public class IndividualCalendar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 

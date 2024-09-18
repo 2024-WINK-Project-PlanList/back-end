@@ -1,17 +1,17 @@
-package kr.ac.kookmin.wink.planlist.individual.schedule.dto;
+package kr.ac.kookmin.wink.planlist.shared.schedule.dto;
 
 import kr.ac.kookmin.wink.planlist.individual.schedule.domain.ScheduleOpenStatus;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
-@Setter
+@Builder
 @AllArgsConstructor
-public class IndividualScheduleRequestDTO {
+@Getter
+public class SharedScheduleRequestDTO {
     private String name;
     private String description;
     private LocalDateTime startDate;
