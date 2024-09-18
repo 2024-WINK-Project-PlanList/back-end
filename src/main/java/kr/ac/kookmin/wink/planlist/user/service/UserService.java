@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -59,28 +60,25 @@ public class UserService {
     }
 
     @Transactional
-    public void updateSong(SongRequestDTO requestDTO, User user) {
+    public void updateSong(SongRequestDTO requestDTO, Long userId) {
+        User user = findUserById(userId);
         user.setSongId(requestDTO.getSongId());
     }
 
     @Transactional
-    public void changeUserProfile(ChangeProfileRequestDTO requestDTO, User user) {
+    public void changeUserProfile(ChangeProfileRequestDTO requestDTO, MultipartFile profileImage, Long userId) {
+        User user = findUserById(userId);
         user.updateUserProfile(requestDTO.getNickname(), requestDTO.getSongId(), requestDTO.getComment());
-
-        String profileImage = requestDTO.getProfileImage();
 
         if (profileImage != null && !profileImage.isEmpty()) {
             uploadUserProfileImage(user, profileImage);
         }
-
-        userRepository.save(user);
     }
 
-    @Transactional
-    public void uploadUserProfileImage(User user, String imageBase64) {
+    private void uploadUserProfileImage(User user, MultipartFile profileImage) {
         try {
             String randomName = UUID.randomUUID().toString();
-            String imagePath = s3Service.uploadBase64Image(imageBase64, "profile/user/", randomName);
+            String imagePath = s3Service.uploadImageFile(profileImage, "profile/user/" + randomName);
 
             user.setProfileImagePath(imagePath);
         } catch(Exception e) {
