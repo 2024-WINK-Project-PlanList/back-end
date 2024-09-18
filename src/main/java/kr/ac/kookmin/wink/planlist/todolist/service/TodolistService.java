@@ -5,7 +5,7 @@ import kr.ac.kookmin.wink.planlist.todolist.dto.TodolistDTO;
 import kr.ac.kookmin.wink.planlist.todolist.dto.request.CreateTodolistRequestDTO;
 import kr.ac.kookmin.wink.planlist.todolist.dto.request.UpdateTodolistRequestDTO;
 import kr.ac.kookmin.wink.planlist.todolist.exception.TodolistErrorCode;
-import kr.ac.kookmin.wink.planlist.todolist.model.Todolist;
+import kr.ac.kookmin.wink.planlist.todolist.domain.Todolist;
 import kr.ac.kookmin.wink.planlist.todolist.repository.TodolistRepository;
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;

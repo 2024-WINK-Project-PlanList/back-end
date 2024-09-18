@@ -2,7 +2,7 @@ package kr.ac.kookmin.wink.planlist.todolist.repository;
 
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import org.springframework.stereotype.Repository;
-import kr.ac.kookmin.wink.planlist.todolist.model.Todolist;
+import kr.ac.kookmin.wink.planlist.todolist.domain.Todolist;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

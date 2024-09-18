@@ -25,7 +25,7 @@ public class IndividualSchedule {
     private Long id;
 
     // todo: name으로
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     // todo: 상세(또는 장소)

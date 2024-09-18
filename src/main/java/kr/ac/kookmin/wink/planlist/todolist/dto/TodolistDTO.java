@@ -1,6 +1,6 @@
 package kr.ac.kookmin.wink.planlist.todolist.dto;
 
-import kr.ac.kookmin.wink.planlist.todolist.model.Todolist;
+import kr.ac.kookmin.wink.planlist.todolist.domain.Todolist;
 import lombok.*;
 
 import java.time.LocalDateTime;

@@ -1,13 +1,13 @@
-package kr.ac.kookmin.wink.planlist.todolist.model;
+package kr.ac.kookmin.wink.planlist.todolist.domain;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-
 import kr.ac.kookmin.wink.planlist.user.domain.User;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor

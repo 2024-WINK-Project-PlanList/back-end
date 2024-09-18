@@ -12,11 +12,13 @@ import kr.ac.kookmin.wink.planlist.user.dto.response.UserDTO;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class IndividualCalendarService {
 
     private final IndividualCalendarRepository calenderRepository;
@@ -28,6 +30,7 @@ public class IndividualCalendarService {
      * 개인캘린더 생성
      * @param user
      */
+    @Transactional
     public void create(User user) {
 
         IndividualCalendar individualCalendar = IndividualCalendar.builder()
@@ -77,6 +80,7 @@ public class IndividualCalendarService {
      * 캘린더 삭제
      * @param calendarId
      */
+    @Transactional
     public void delete(Long calendarId){
         individualCalendarRepository.deleteById(calendarId);
 

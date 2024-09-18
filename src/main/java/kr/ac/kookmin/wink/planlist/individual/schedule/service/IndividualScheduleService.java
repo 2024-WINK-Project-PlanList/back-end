@@ -12,18 +12,21 @@ import kr.ac.kookmin.wink.planlist.user.domain.User;
 import kr.ac.kookmin.wink.planlist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class IndividualScheduleService {
 
     private final IndividualScheduleRepository individualScheduleRepository;
     private final IndividualCalendarRepository individualCalendarRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public void createSchedule(IndividualScheduleRequestDTO individualScheduleRequestDTO) {
         IndividualCalendar individualCalendar = individualCalendarRepository.findById(individualScheduleRequestDTO.getCalendarId())
                         .orElseThrow(() -> new CustomException(IndividualErrorCode.INVALID_CALENDAR_ID));
@@ -55,6 +58,7 @@ public class IndividualScheduleService {
         return IndividualScheduleResponseDTO.create(individualSchedule);
     }
 
+    @Transactional
     public void updateSchedule(Long scheduleId, IndividualScheduleRequestDTO individualScheduleRequestDTO) {
         IndividualSchedule individualSchedule = individualScheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new CustomException(IndividualErrorCode.INVALID_SCHEDULE_ID));
@@ -68,6 +72,7 @@ public class IndividualScheduleService {
         individualScheduleRepository.save(individualSchedule.updateSchedule(individualScheduleRequestDTO, userList));
     }
 
+    @Transactional
     public void deleteSchedule(Long scheduleId) {
         IndividualSchedule individualSchedule = individualScheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new CustomException(IndividualErrorCode.INVALID_SCHEDULE_ID));
