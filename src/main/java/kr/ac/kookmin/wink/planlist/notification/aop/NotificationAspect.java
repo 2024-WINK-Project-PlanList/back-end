@@ -59,6 +59,7 @@ public class NotificationAspect {
     public void handleFriendshipDelete(JoinPoint joinPoint, Long friendshipId) {
         Friendship friendship = friendshipService.findById(friendshipId);
 
+
         // 친구 관계 상태가 WAITING일 때만 알림 삭제 로직 수행
         if (friendship.getStatus() == FriendStatus.WAITING) {
             // 알림 조회
@@ -66,6 +67,15 @@ public class NotificationAspect {
                     NotificationMessage.FRIEND_REQUEST,
                     friendshipId,
                     friendship.getFollowing()
+            );
+
+            // 알림 삭제
+            notificationService.deleteNotification(notification);
+        } else {
+            Notification notification = notificationService.findByMessageType(
+                    NotificationMessage.FRIEND_ACCEPTED,
+                    friendshipId,
+                    friendship.getFollower()
             );
 
             // 알림 삭제
