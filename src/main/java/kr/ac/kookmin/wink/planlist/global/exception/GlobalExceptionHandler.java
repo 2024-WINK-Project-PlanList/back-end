@@ -24,6 +24,8 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.create(exception, Instant.now());
         HttpStatus httpStatus = errorCode.getHttpStatus();
 
+        exception.printStackTrace();
+
         return new ResponseEntity<>(errorResponseDTO, httpStatus);
     }
 }

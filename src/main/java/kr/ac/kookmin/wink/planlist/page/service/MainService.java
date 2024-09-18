@@ -26,7 +26,7 @@ public class MainService {
                 .stream()
                 .filter((notification) -> !notification.isRead())
                 .count();
-
+        
         return MainPageResponseDTO
                 .builder()
                 .friendComments(friendComments)

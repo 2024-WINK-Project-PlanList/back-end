@@ -39,6 +39,6 @@ public class Friendship {
     }
 
     public boolean isFollower(User user) {
-        return user.equals(follower);
+        return user.getId().equals(follower.getId());
     }
 }
