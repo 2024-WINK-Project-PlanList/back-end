@@ -14,7 +14,7 @@ import lombok.*;
 public class SharedCalendar {
 
     @Id
-    @Column(name = "shared_calendar_id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
