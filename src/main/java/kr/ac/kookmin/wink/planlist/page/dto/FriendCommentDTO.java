@@ -14,12 +14,14 @@ public class FriendCommentDTO {
     private String profileImagePath;
     private String comment;
     private String song;
+    private String email;
 
     public static FriendCommentDTO create(UserDTO userDTO) {
         return FriendCommentDTO
                 .builder()
                 .id(userDTO.getId())
                 .nickname(userDTO.getNickname())
+                .email(userDTO.getEmail())
                 .profileImagePath(userDTO.getProfileImagePath())
                 .comment(userDTO.getComment())
                 .song(userDTO.getSongId())
