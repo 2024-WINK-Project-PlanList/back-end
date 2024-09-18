@@ -19,10 +19,10 @@ public class UserController {
 
     @PatchMapping("/me")
     public ResponseEntity<?> changeUserProfile(
-            @RequestPart ChangeProfileRequestDTO requestDTO,
-            @RequestPart(required = false) MultipartFile profileImage,
+            @RequestPart ChangeProfileRequestDTO profile,
+            @RequestPart(required = false) MultipartFile image,
             @AuthenticationPrincipal SecurityUser securityUser) {
-        userService.changeUserProfile(requestDTO, profileImage, securityUser.getUser().getId());
+        userService.changeUserProfile(profile, image, securityUser.getUser().getId());
         return ResponseEntity.ok().build();
     }
 

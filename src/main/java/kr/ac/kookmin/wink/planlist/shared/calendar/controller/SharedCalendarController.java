@@ -32,11 +32,11 @@ public class SharedCalendarController {
 
     @PostMapping
     public ResponseEntity<?> createSharedCalendar(
-            @RequestPart CreateSharedCalendarRequestDTO requestDTO,
+            @RequestPart CreateSharedCalendarRequestDTO calendar,
             @RequestPart(required = false) MultipartFile image,
             @AuthenticationPrincipal SecurityUser securityUser
     ) {
-        sharedCalendarService.createSharedCalendar(requestDTO, image, securityUser.getUser());
+        sharedCalendarService.createSharedCalendar(calendar, image, securityUser.getUser());
         return ResponseEntity.ok().build();
     }
 
