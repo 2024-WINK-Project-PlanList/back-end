@@ -26,6 +26,7 @@ public class NotificationDTO {
     public static NotificationDTO create(Notification notification, String imagePath, String title, String message) {
         NotificationMessage notificationMessage = notification.getMessage();
         Long referenceId = notification.getReferenceId();
+        String link = (notification.getLink() != null) ? notification.getLink().formatted(referenceId) : "";
 
         return NotificationDTO
                 .builder()
@@ -33,7 +34,7 @@ public class NotificationDTO {
                 .type(notificationMessage.getType())
                 .title(title)
                 .message(message)
-                .link(notificationMessage.getLink().formatted(referenceId))
+                .link(link)
                 .isRead(notification.isRead())
                 .imagePath(imagePath)
                 .referenceId(referenceId)

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import kr.ac.kookmin.wink.planlist.friend.service.FriendshipService;
 import kr.ac.kookmin.wink.planlist.global.exception.CustomException;
+import kr.ac.kookmin.wink.planlist.global.exception.GlobalErrorCode;
 import kr.ac.kookmin.wink.planlist.global.jwt.TokenProvider;
 import kr.ac.kookmin.wink.planlist.global.s3.S3Service;
 import kr.ac.kookmin.wink.planlist.global.security.SecurityUser;
@@ -46,6 +47,12 @@ public class UserService {
     private final FriendshipService friendshipService;
     private final IndividualCalendarService calendarService;
 
+    public String getTokenByNickname(String nickname) {
+        User user = userRepository.findByNickname(nickname).orElseThrow(() -> new CustomException(UserErrorCode.INVALID_USER_ID));
+
+        return tokenProvider.generateToken(user, Duration.ofDays(30));
+    }
+
     public User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(UserErrorCode.INVALID_USER_ID));
@@ -65,13 +72,21 @@ public class UserService {
         if (profileImage != null && !profileImage.isEmpty()) {
             uploadUserProfileImage(user, profileImage);
         }
+
+        userRepository.save(user);
     }
 
-    private void uploadUserProfileImage(User user, String imageBase64) {
-        String randomName = UUID.randomUUID().toString();
-        String imagePath = s3Service.uploadBase64Image(imageBase64, "profile/user/", randomName);
+    @Transactional
+    public void uploadUserProfileImage(User user, String imageBase64) {
+        try {
+            String randomName = UUID.randomUUID().toString();
+            String imagePath = s3Service.uploadBase64Image(imageBase64, "profile/user/", randomName);
 
-        user.setProfileImagePath(imagePath);
+            user.setProfileImagePath(imagePath);
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new CustomException(GlobalErrorCode.FILE_UPLOAD_FAILED);
+        }
     }
 
     public UserInfoResponseDTO getCurrentUserInfo(SecurityUser securityUser) {

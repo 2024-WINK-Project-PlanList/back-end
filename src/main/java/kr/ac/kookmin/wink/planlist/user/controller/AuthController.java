@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final UserService userService;
 
+    //테스트용
+    @GetMapping("/token/{nickname}")
+    public ResponseEntity<String> getToken(@PathVariable String nickname) {
+        return ResponseEntity.ok(userService.getTokenByNickname(nickname));
+    }
+
     @PostMapping("/kakao")
     public ResponseEntity<KakaoLoginResponseDTO> kakaoLogin(@RequestBody KakaoLoginRequestDTO kakaoLoginRequestDTO) {
         return ResponseEntity.ok(userService.kakaoLogin(kakaoLoginRequestDTO));

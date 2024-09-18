@@ -58,9 +58,14 @@ public class SharedCalendarService {
                 .build();
 
         String randomName = UUID.randomUUID().toString();
-        String imagePath = s3Service.uploadBase64Image(requestDTO.getImageBase64(), "profile/calendar/", randomName);
+        String imageBase64 = requestDTO.getImageBase64();
 
-        sharedCalendar.setCalendarImagePath(imagePath);
+        if (imageBase64 != null) {
+            String imagePath = s3Service.uploadBase64Image(imageBase64, "profile/calendar/", randomName);
+
+            sharedCalendar.setCalendarImagePath(imagePath);
+        }
+
         sharedCalendarRepository.save(sharedCalendar);
 
         UserSharedCalendar userSharedCalendar = UserSharedCalendar.builder()
