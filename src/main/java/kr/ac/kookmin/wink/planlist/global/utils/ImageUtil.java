@@ -16,9 +16,6 @@ public class ImageUtil {
 //        Assert.isTrue(base64.startsWith("data:image/"));
         int colon = base64.indexOf(":");
         int semicolon = base64.indexOf(";");
-        System.out.println("base64: " + base64);
-        System.out.println("colon: " + colon);
-        System.out.println("semicolon: " + semicolon);
         String mimeType = base64.substring(colon + 1, semicolon);
         String base64WithoutHeader = base64.substring(semicolon + 8);
 
