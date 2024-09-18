@@ -58,16 +58,13 @@ public class FriendshipService {
 
     //TODO: 친구 이메일 검색 구현
     public List<SearchUserResponseDTO> findAllUsersBySearch(User user, String keyword, boolean onlyFriends) {
-        List<UserDTO> allFriendsByUser = findAllFriendsByUser(user)
-                .stream()
-                .map(UserFriendsResponseDTO::getFriend)
-                .toList();
+        List<UserFriendsResponseDTO> allFriendsByUser = findAllFriendsByUser(user);
 
         if (onlyFriends) {
             return allFriendsByUser
                     .stream()
-                    .filter((friendDTO) -> friendDTO.getEmail().contains(keyword))
-                    .map((filtered) -> new SearchUserResponseDTO(filtered, true))
+                    .filter((friendDTO) -> friendDTO.getFriend().getEmail().contains(keyword))
+                    .map((filtered) -> new SearchUserResponseDTO(filtered.getFriend(), filtered.getFriendshipId(), true))
                     .toList();
         } else {
             List<UserDTO> searchResults = userRepository
@@ -78,12 +75,12 @@ public class FriendshipService {
 
             List<String> friendEmails = allFriendsByUser
                     .stream()
-                    .map(UserDTO::getEmail)
+                    .map((friendDTO) -> friendDTO.getFriend().getEmail())
                     .toList();
 
             return searchResults
                     .stream()
-                    .map((result) -> new SearchUserResponseDTO(result, friendEmails.contains(result.getEmail())))
+                    .map((result) -> new SearchUserResponseDTO(result, -1L, friendEmails.contains(result.getEmail())))
                     .toList();
         }
     }

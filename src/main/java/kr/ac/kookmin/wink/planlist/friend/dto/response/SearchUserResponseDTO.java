@@ -13,5 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SearchUserResponseDTO {
     private UserDTO user;
+    private Long friendshipId;
     private boolean isFriend;
 }
