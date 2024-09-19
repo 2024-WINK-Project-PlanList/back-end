@@ -20,7 +20,7 @@ public enum NotificationMessage {
     ),
     CALENDAR_INVITATION(
             "공유 캘린더 초대가 왔어요",
-            "%s님이 당신을 [%s]에 초대했어요.",
+            "[%s]에 멤버가 되려면 '수락'을 눌러보세요.'",
             NotificationType.INVITATION,
             null
     ),

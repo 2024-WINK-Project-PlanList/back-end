@@ -139,19 +139,24 @@ public class NotificationService {
 
     public String getFormattedMessage(Notification notification) {
         NotificationMessage message = notification.getMessage();
+        Long referenceId = notification.getReferenceId();
 
         if (message == NotificationMessage.WELCOME) {
             String userName = notification.getUser().getNickname();
 
             return message.getMessage().formatted(userName);
         } else if (message == NotificationMessage.FRIEND_REQUEST) {
-            Long referenceId = notification.getReferenceId();
-
             if (friendshipService.existsById(referenceId)) {
                 Friendship friendship = friendshipService.findById(referenceId);
                 String followerName = friendship.getFollower().getNickname();
 
                 return message.getMessage().formatted(followerName);
+            }
+        } else if (message == NotificationMessage.CALENDAR_INVITATION) {
+            if (sharedCalendarService.existsById(referenceId)) {
+                SharedCalendar sharedCalendar = sharedCalendarService.findById(referenceId);
+
+                return message.getMessage().formatted(sharedCalendar.getName());
             }
         }
 
