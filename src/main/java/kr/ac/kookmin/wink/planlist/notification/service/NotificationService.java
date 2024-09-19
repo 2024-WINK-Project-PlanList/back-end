@@ -165,15 +165,20 @@ public class NotificationService {
 
     public String getFormattedTitle(Notification notification) {
         NotificationMessage message = notification.getMessage();
+        Long referenceId = notification.getReferenceId();
 
         if (message == NotificationMessage.FRIEND_ACCEPTED) {
-            Long referenceId = notification.getReferenceId();
-
             if (friendshipService.existsById(referenceId)) {
                 Friendship friendship = friendshipService.findById(referenceId);
                 String followingName = friendship.getFollowing().getNickname();
 
                 return message.getTitle().formatted(followingName);
+            }
+        } else if (message == NotificationMessage.CALENDAR_ACCEPTED) {
+            if (sharedCalendarService.existsById(referenceId)) {
+                SharedCalendar sharedCalendar = sharedCalendarService.findById(referenceId);
+
+                return message.getTitle().formatted(sharedCalendar.getName());
             }
         }
 
