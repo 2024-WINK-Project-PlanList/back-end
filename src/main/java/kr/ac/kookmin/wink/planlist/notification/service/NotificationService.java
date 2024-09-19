@@ -145,10 +145,14 @@ public class NotificationService {
 
             return message.getMessage().formatted(userName);
         } else if (message == NotificationMessage.FRIEND_REQUEST) {
-            Friendship friendship = friendshipService.findById(notification.getReferenceId());
-            String followerName = friendship.getFollower().getNickname();
+            Long referenceId = notification.getReferenceId();
 
-            return message.getMessage().formatted(followerName);
+            if (friendshipService.existsById(referenceId)) {
+                Friendship friendship = friendshipService.findById(referenceId);
+                String followerName = friendship.getFollower().getNickname();
+
+                return message.getMessage().formatted(followerName);
+            }
         }
 
         return message.getMessage();
@@ -158,10 +162,14 @@ public class NotificationService {
         NotificationMessage message = notification.getMessage();
 
         if (message == NotificationMessage.FRIEND_ACCEPTED) {
-            Friendship friendship = friendshipService.findById(notification.getReferenceId());
-            String followingName = friendship.getFollowing().getNickname();
+            Long referenceId = notification.getReferenceId();
 
-            return message.getTitle().formatted(followingName);
+            if (friendshipService.existsById(referenceId)) {
+                Friendship friendship = friendshipService.findById(referenceId);
+                String followingName = friendship.getFollowing().getNickname();
+
+                return message.getTitle().formatted(followingName);
+            }
         }
 
         return message.getTitle();

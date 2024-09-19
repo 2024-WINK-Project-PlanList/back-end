@@ -31,6 +31,10 @@ public class FriendshipService {
     private final FriendshipRepository friendshipRepository;
     private final UserRepository userRepository;
 
+    public boolean existsById(Long friendshipId) {
+        return friendshipRepository.existsById(friendshipId);
+    }
+
     public Friendship findById(Long friendshipId) {
         return friendshipRepository.findById(friendshipId)
                 .orElseThrow(() -> new CustomException(FriendErrorCode.INVALID_FRIENDSHIP_ID));

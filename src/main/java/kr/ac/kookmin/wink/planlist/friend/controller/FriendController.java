@@ -54,8 +54,6 @@ public class FriendController {
         return ResponseEntity.ok().body(friendshipService.findAllUsersBySearch(securityUser.getUser(), keyword, onlyFriends));
     }
 
-
-
 //    @GetMapping("/test/{userId}")
 //    public List<User> test(@PathVariable("userId") Long userId) {
 //        return friendshipService.test(userId);

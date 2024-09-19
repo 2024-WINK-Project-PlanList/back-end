@@ -6,7 +6,6 @@ import kr.ac.kookmin.wink.planlist.notification.aop.Notify;
 import kr.ac.kookmin.wink.planlist.notification.domain.NotificationMessage;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.SharedCalendar;
 import kr.ac.kookmin.wink.planlist.shared.calendar.domain.UserSharedCalendar;
-import kr.ac.kookmin.wink.planlist.shared.calendar.domain.UserSharedCalendarId;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.request.CreateSharedCalendarRequestDTO;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.request.InviteSharedCalendarRequestDTO;
 import kr.ac.kookmin.wink.planlist.shared.calendar.dto.request.UpdateSharedCalendarRequestDTO;
@@ -35,6 +34,10 @@ public class SharedCalendarService {
     private final UserSharedCalendarRepository userSharedCalendarRepository;
     private final UserService userService;
     private final S3Service s3Service;
+
+    public boolean existsById(Long id) {
+        return sharedCalendarRepository.existsById(id);
+    }
 
     public SharedCalendar findById(Long id) {
         return sharedCalendarRepository.findById(id)
