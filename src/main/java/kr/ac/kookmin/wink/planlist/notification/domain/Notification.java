@@ -32,6 +32,7 @@ public class Notification {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Deprecated
     private String link;
 
     @ColumnDefault("false")
